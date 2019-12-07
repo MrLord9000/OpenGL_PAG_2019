@@ -66,6 +66,10 @@ int main()
 	float baseTranslation[3] = { 0.0f, 0.0f, 5.0f };
 	float scale = 1.0f;
 
+// Camera setup
+
+	Camera mainCamera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
 // Setup materials
 
 	glm::mat4 model_zero = glm::mat4(1.0f);
@@ -222,8 +226,8 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		// Handle input ++++++++++++++
-		processInput(window);
-
+		processInput(window, mainCamera);
+		mainCamera.Update();
 #pragma region ImGUI
 		// ImGUI operations ++++++++++++++
 
@@ -274,11 +278,12 @@ int main()
 
 
 		// VIEW
-		view = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(-baseTranslation[0], -baseTranslation[1], -baseTranslation[2])); // Note that we're translating in the opposite direction we want our camera to move
-		view = glm::rotate(view, glm::radians(baseRotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
-		view = glm::rotate(view, glm::radians(baseRotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
-		view = glm::rotate(view, glm::radians(baseRotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+		view = Camera::viewMatrix;
+		//view = glm::mat4(1.0f);
+		//view = glm::translate(view, glm::vec3(-baseTranslation[0], -baseTranslation[1], -baseTranslation[2])); // Note that we're translating in the opposite direction we want our camera to move
+		//view = glm::rotate(view, glm::radians(baseRotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+		//view = glm::rotate(view, glm::radians(baseRotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+		//view = glm::rotate(view, glm::radians(baseRotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
 
 		// PROJECTION
 		if (!ortographic)
@@ -293,14 +298,6 @@ int main()
 		coruscant_node.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() * 3.0f));
 		glm::mat4 rootTransform = glm::mat4(1.0f);
 		rootNode.Render(rootTransform);
-
-		/*if (visualizeNormals)
-		{
-			normalVisualization.Use();
-			normalVisualization.SetMat4("projection", projection);
-			normalVisualization.SetMat4("view", view);
-			rootNode.Render(rootTransform, normalVisualization);
-		}*/
 
 
 		// ImGUI Render ++++++++++++
@@ -325,91 +322,57 @@ int main()
 	return 0;
 }
 
-void createMenger(glm::mat4 &model, glm::vec3 cubePositions[], Shader &shaderProgram, int iteration, int iterations)
-{
-	if (iteration == iterations)
-	{
-		shaderProgram.SetMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		return;
-	}
-	else
-	{
-		for (size_t i = 0; i < 20; i++)
-		{
-			glm::mat4 model_local = glm::mat4(1.0f);
-			model_local = glm::scale(model_local, glm::vec3(1.0f / 3.0f));
-			model_local = glm::translate(model_local, cubePositions[i]);
-			model_local = model * model_local;
-			createMenger(model_local, cubePositions, shaderProgram, iteration + 1, iterations);
-		}
-	}
-}
-
-// Generates vertices and indices for fractal
-void createCarpet(std::vector<float> &vertices, std::vector<unsigned int> &indices, int iterations)
-{
-	vertices.clear();
-	indices.clear();
-	carpetFunction(vertices, indices, 2.0f, 2.0f, 0.0f, 0.0f, 0, iterations);
-}
-
-void carpetFunction(std::vector<float> &vertices, std::vector<unsigned int> &indices, float width, float height, float x, float y, int iteration, int iterations)
-{
-	float wn = width / 3.0f, hn = height / 3.0f;
-	createQuad2D(x, y, wn, hn, vertices, indices);
-	if (iteration == iterations) return;
-	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 3; j++)
-		{
-			if (i == 1 && j == 1) continue;
-			carpetFunction(vertices, indices, wn, hn, x + wn * (i - 1), y + hn * (j - 1), iteration + 1, iterations);
-		}
-	}
-}
-
 // Process input function to easily handle key input
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, Camera &camera)
 {
+	// Handle application exit
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+
+	// Handle WSAD input
+	glm::vec3 targetVec = glm::vec3(0.0f);
+
+	// W key
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		targetVec += camera.GetSpeed() * camera.GetFront();
+	}
+	// S key
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		targetVec -= camera.GetSpeed() * camera.GetFront();
+	}
+	// A key
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		targetVec -= glm::normalize(glm::cross(camera.GetFront(), camera.GetUp())) * camera.GetSpeed();
+	}
+	// D key
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		targetVec += glm::normalize(glm::cross(camera.GetFront(), camera.GetUp())) * camera.GetSpeed();
+	}
+	// Q key
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		targetVec += camera.GetUp() * camera.GetSpeed();
+	}
+	// E key
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		targetVec -= camera.GetUp() * camera.GetSpeed();
+	}
+
+	targetVec += camera.GetPosition();
+	camera.SetPosition(targetVec);
 }
 
 // Callback function that gets called each time the window is resized
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
-}
-
-void createQuad2D(float x, float y, float width, float height, std::vector<float> &vertices, std::vector<unsigned int> &indices)
-{
-	float vertices_quad[] = 
-	{
-		x + width / 2.0f, y + height / 2.0f, 0.0f, // top right vertex
-		x + width / 2.0f, y - height / 2.0f, 0.0f, // bottom right vertex
-		x - width / 2.0f, y - height / 2.0f, 0.0f, // bottom left vertex
-		x - width / 2.0f, y + height / 2.0f, 0.0f  // top left vertex
-	};
-
-	for (float vertex : vertices_quad)
-	{
-		vertices.push_back(vertex);
-	}
-
-	int vertices_count = vertices.size() / 3;
-	float indices_quad[] =
-	{
-		vertices_count - 4, vertices_count - 3, vertices_count - 1,
-		vertices_count - 3, vertices_count - 2, vertices_count - 1
-	};
-
-	for (float index : indices_quad)
-	{
-		indices.push_back(index);
-	}
 }
 
 int initEverything(GLFWwindow** window)
