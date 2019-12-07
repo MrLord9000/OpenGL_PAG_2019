@@ -10,9 +10,11 @@ public:
 	Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up);
 
 	static glm::mat4 viewMatrix;
+	static float pitch, yaw;
 
 	void SetAll(glm::vec3 &pos, glm::vec3 &front, glm::vec3 &up);
 	void SetPosition(glm::vec3 &pos);
+	void SetFront(glm::vec3& front);
 	void SetSpeed(float speed);
 
 	float GetSpeed();
@@ -23,7 +25,7 @@ public:
 	void Update();
 
 private:
-	float speed = 0.05f;
+	float speed = 2.0f;
 	glm::vec3 position = glm::vec3(0.0f);
 	glm::vec3 front = glm::vec3(0.0f);
 	glm::vec3 up = glm::vec3(0.0f);

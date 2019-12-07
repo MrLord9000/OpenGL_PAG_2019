@@ -27,6 +27,15 @@ const int WINDOW_HEIGHT = 1024;
 
 const char* glsl_version = "#version 330";
 
+// Global time variables - maybe not the best practice
+
+float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
+float lastMouseX = 512;
+float lastMouseY = 512;
+bool firstMouse = true;
+float fov = 60.0f;
+
 int main()
 {
 	std::cout << "Wariant: " << 216835 % 4 + 1 << "\n";
@@ -225,6 +234,11 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
+		// Handle time and deltaTime
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		// Handle input ++++++++++++++
 		processInput(window, mainCamera);
 		mainCamera.Update();
@@ -287,7 +301,7 @@ int main()
 
 		// PROJECTION
 		if (!ortographic)
-			projection = glm::perspective(glm::radians(45.0f), (float)(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 100.0f);
+			projection = glm::perspective(glm::radians(fov), (float)(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 100.0f);
 		else
 			projection = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.1f, 100.0f);
 
@@ -328,45 +342,98 @@ void processInput(GLFWwindow* window, Camera &camera)
 	// Handle application exit
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
-		glfwSetWindowShouldClose(window, true);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		//glfwSetWindowShouldClose(window, true);
+	}
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	// Handle WSAD input
 	glm::vec3 targetVec = glm::vec3(0.0f);
-
+	float cameraSpeed = camera.GetSpeed() * deltaTime;
 	// W key
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		targetVec += camera.GetSpeed() * camera.GetFront();
+		targetVec += cameraSpeed * camera.GetFront();
 	}
 	// S key
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		targetVec -= camera.GetSpeed() * camera.GetFront();
+		targetVec -= cameraSpeed * camera.GetFront();
 	}
 	// A key
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		targetVec -= glm::normalize(glm::cross(camera.GetFront(), camera.GetUp())) * camera.GetSpeed();
+		targetVec -= glm::normalize(glm::cross(camera.GetFront(), camera.GetUp())) * cameraSpeed;
 	}
 	// D key
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		targetVec += glm::normalize(glm::cross(camera.GetFront(), camera.GetUp())) * camera.GetSpeed();
+		targetVec += glm::normalize(glm::cross(camera.GetFront(), camera.GetUp())) * cameraSpeed;
 	}
 	// Q key
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		targetVec += camera.GetUp() * camera.GetSpeed();
+		targetVec -= camera.GetUp() * cameraSpeed;
 	}
 	// E key
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		targetVec -= camera.GetUp() * camera.GetSpeed();
+		targetVec += camera.GetUp() * cameraSpeed;
 	}
 
 	targetVec += camera.GetPosition();
 	camera.SetPosition(targetVec);
+
+	// Handle mouse input
+	glm::vec3 directionVec = glm::vec3(0.0f);
+	directionVec.x = cos(glm::radians(Camera::pitch)) * cos(glm::radians(Camera::yaw));
+	directionVec.y = sin(glm::radians(Camera::pitch));
+	directionVec.z = cos(glm::radians(Camera::pitch)) * sin(glm::radians(Camera::yaw));
+	directionVec = glm::normalize(directionVec);
+	camera.SetFront(directionVec);
+}
+
+// Callback function for handling mouse input
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastMouseX = xpos;
+		lastMouseY = ypos;
+		firstMouse = false;
+	}
+
+	float xOffset = xpos - lastMouseX;
+	float yOffset = lastMouseY - ypos;
+
+	lastMouseX = xpos;
+	lastMouseY = ypos;
+
+	float sensitivity = 1.05f;
+	xOffset *= sensitivity;
+	yOffset *= sensitivity;
+
+	Camera::yaw += xOffset;
+	Camera::pitch += yOffset;
+
+	// Constrain the pitch value
+	if (Camera::pitch > 89.0f)
+		Camera::pitch = 89.0f;
+	if (Camera::pitch < -89.0f)
+		Camera::pitch = -89.0f;
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	if (fov >= 1.0f && fov <= 80.0f)
+		fov -= yoffset;
+	if (fov <= 1.0f)
+		fov = 1.0f;
+	if (fov >= 80.0f)
+		fov = 80.0f;
 }
 
 // Callback function that gets called each time the window is resized
@@ -411,6 +478,9 @@ int initEverything(GLFWwindow** window)
 
 	// Set the callback function to call on every window resize
 	glfwSetFramebufferSizeCallback(*window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(*window, mouse_callback);
+	glfwSetScrollCallback(*window, scroll_callback);
+	glfwSetInputMode(*window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 // ImGui setup ===========================================================================
 
