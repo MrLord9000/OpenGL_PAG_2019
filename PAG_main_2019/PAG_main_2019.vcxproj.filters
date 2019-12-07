@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{fb59402f-3d0b-47c8-943c-4ba5be6bf786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Thirdparty">
+      <UniqueIdentifier>{ae872af1-144e-4c90-8cbb-dfb664862c1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\geometry_unlit">
+      <UniqueIdentifier>{ee5a971c-f236-456c-b710-a95c3ca1b308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\texture_unlit">
+      <UniqueIdentifier>{534f0260-ac0f-4ea5-9e84-b8123a53e36b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\normals_visualization">
+      <UniqueIdentifier>{694f2d60-b580-4fab-b539-6b4004425f9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\explode_effect">
+      <UniqueIdentifier>{f2af61ad-4c51-4f8d-ae2a-36b0ffcea029}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="glad.c">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Thirdparty\ImGUI\imgui.cpp">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="Thirdparty\ImGUI\imgui_demo.cpp">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="Thirdparty\ImGUI\imgui_draw.cpp">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="Thirdparty\ImGUI\imgui_widgets.cpp">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="Thirdparty\ImGUI\imgui_impl_glfw.cpp">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="Thirdparty\ImGUI\imgui_impl_opengl3.cpp">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\ImGUI\imconfig.h">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\ImGUI\imgui.h">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\ImGUI\imgui_internal.h">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\ImGUI\imstb_rectpack.h">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\ImGUI\imstb_textedit.h">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\ImGUI\imstb_truetype.h">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\ImGUI\imgui_impl_glfw.h">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\ImGUI\imgui_impl_opengl3.h">
+      <Filter>Source Files\Thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\geometryUnlit.frag">
+      <Filter>Shaders\geometry_unlit</Filter>
+    </None>
+    <None Include="Shaders\geometryUnlit.geom">
+      <Filter>Shaders\geometry_unlit</Filter>
+    </None>
+    <None Include="Shaders\geometryUnlit.vert">
+      <Filter>Shaders\geometry_unlit</Filter>
+    </None>
+    <None Include="Shaders\textureUnlit.frag">
+      <Filter>Shaders\texture_unlit</Filter>
+    </None>
+    <None Include="Shaders\textureUnlit.vert">
+      <Filter>Shaders\texture_unlit</Filter>
+    </None>
+    <None Include="Shaders\normalVisualization.frag">
+      <Filter>Shaders\normals_visualization</Filter>
+    </None>
+    <None Include="Shaders\normalVisualization.vert">
+      <Filter>Shaders\normals_visualization</Filter>
+    </None>
+    <None Include="Shaders\normalVisualization.geom">
+      <Filter>Shaders\normals_visualization</Filter>
+    </None>
+    <None Include="Shaders\explodeEffect.geom">
+      <Filter>Shaders\explode_effect</Filter>
+    </None>
+    <None Include="Shaders\explodeEffect.frag">
+      <Filter>Shaders\explode_effect</Filter>
+    </None>
+    <None Include="Shaders\explodeEffect.vert">
+      <Filter>Shaders\explode_effect</Filter>
+    </None>
+    <None Include="Shaders\proceduralCylinder.geom">
+      <Filter>Shaders\geometry_unlit</Filter>
+    </None>
+    <None Include="Shaders\proceduralOrbit.geom">
+      <Filter>Shaders\geometry_unlit</Filter>
+    </None>
+  </ItemGroup>
+</Project>
