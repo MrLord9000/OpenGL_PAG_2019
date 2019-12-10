@@ -31,6 +31,9 @@
     <Filter Include="Shaders\explode_effect">
       <UniqueIdentifier>{f2af61ad-4c51-4f8d-ae2a-36b0ffcea029}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\simple_ambient">
+      <UniqueIdentifier>{ed511a0c-2ec2-4781-9ac3-0fa7837cd212}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">

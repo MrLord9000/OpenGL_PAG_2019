@@ -58,9 +58,6 @@ int main()
 // Compiling needed shader programs;
 
 	Shader textureUnlit("Shaders/textureUnlit.vert", "Shaders/textureUnlit.frag");
-	Shader geometryUnlit("Shaders/geometryUnlit.vert", "Shaders/geometryUnlit.frag", "Shaders/proceduralCylinder.geom");
-	Shader orbitUnlit("Shaders/geometryUnlit.vert", "Shaders/geometryUnlit.frag", "Shaders/proceduralOrbit.geom");
-	Shader normalVisualization("Shaders/normalVisualization.vert", "Shaders/normalVisualization.frag", "Shaders/normalVisualization.geom");
 
 // Runtime rendering properties (mainly for fun)
 
@@ -77,7 +74,7 @@ int main()
 
 // Camera setup
 
-	Camera mainCamera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	Camera mainCamera = Camera(glm::vec3(-5.0f, 5.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 // Setup materials
 
@@ -85,14 +82,28 @@ int main()
 	glm::mat4 projection;
 	glm::mat4 view = glm::mat4(1.0f);
 
+	Material houseMaterial = Material(&textureUnlit);
+	houseMaterial.SetModel(&model_zero);
+	houseMaterial.SetView(&view);
+	houseMaterial.SetProjection(&projection);
+
+	Model houseModel = Model("Models/house_chunk_01/house_chunk_01.obj", &houseMaterial);
+	Model testPlanet = Model("Models/geonosis/geonosis.obj", &houseMaterial);
+
 	// Planets & orbits =====================================================================================
 
 	glm::mat4 matrix = glm::mat4(1.0f);
 
 	// Root **********************************
+	GraphNode rootNode = GraphNode(nullptr);
+
 	matrix = glm::mat4(1.0f);
-	matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	GraphNode rootNode = GraphNode(nullptr, matrix);
+	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	GraphNode house_01 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_01);
+
+	//GraphNode planet_01 = GraphNode(&testPlanet, matrix);
+	//rootNode.AddChild(&planet_01);
 
 
 // ===================================================================================================================================================
@@ -172,10 +183,10 @@ int main()
 			projection = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.1f, 100.0f);
 
 		// Perform per-frame transformations on objects
-		geonosis_pivot.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() / 10.0f));
-		geonosis_node.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() * 3.0f));
-		coruscant_pivot.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), -glm::radians(glfwGetTime()));
-		coruscant_node.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() * 3.0f));
+		//geonosis_pivot.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() / 10.0f));
+		//geonosis_node.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() * 3.0f));
+		//coruscant_pivot.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), -glm::radians(glfwGetTime()));
+		//coruscant_node.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() * 3.0f));
 		glm::mat4 rootTransform = glm::mat4(1.0f);
 		rootNode.Render(rootTransform);
 
@@ -248,6 +259,15 @@ void processInput(GLFWwindow* window, Camera &camera)
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
 		targetVec += camera.GetUp() * cameraSpeed;
+	}
+	// Shift key
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	{
+		camera.SetSpeed(5.0f);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
+	{
+		camera.SetSpeed(2.0f);
 	}
 
 	targetVec += camera.GetPosition();

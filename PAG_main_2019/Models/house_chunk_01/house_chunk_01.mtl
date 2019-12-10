@@ -1,0 +1,22 @@
+newmtl Material__25
+Ns 100.000
+d 1.00000
+illum 2
+Kd 1.00000 1.00000 1.00000
+Ka 0.00000 0.00000 0.00000
+Ks 1.00000 1.00000 1.00000
+Ke 0.00000e+0 0.00000e+0 0.00000e+0
+map_Kd house_chunk_01_Material__25_albedo.tga
+map_Ks house_chunk_01_Material__25_roughness.tga
+map_bump house_chunk_01_Material__25_normal_map.tga
+newmtl wire_198225087
+Ns 100.000
+d 1.00000
+illum 2
+Kd 1.00000 1.00000 1.00000
+Ka 0.00000 0.00000 0.00000
+Ks 1.00000 1.00000 1.00000
+Ke 0.00000e+0 0.00000e+0 0.00000e+0
+map_Kd house_chunk_01_wire_198225087_albedo.tga
+map_Ks house_chunk_01_wire_198225087_roughness.tga
+map_bump house_chunk_01_wire_198225087_normal_map.tga
