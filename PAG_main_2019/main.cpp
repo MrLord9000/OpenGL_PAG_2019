@@ -49,7 +49,7 @@ int main()
 
 	Shader textureUnlit("Shaders/textureUnlit.vert", "Shaders/textureUnlit.frag");
 	Shader unlitColor("Shaders/unlitColor.vert", "Shaders/unlitColor.frag");
-	Shader phong("Shaders/phong.vert", "Shaders/phong.frag");
+	Shader phong("Shaders/phong_view_space.vert", "Shaders/phong_view_space.frag");
 	Shader gouraud("Shaders/gouraud.vert", "Shaders/gouraud.frag");
 
 // Runtime rendering properties (mainly for fun)
@@ -81,10 +81,11 @@ int main()
 	houseMaterial.SetProjection(&projection);
 	houseMaterial.SetViewPosition(mainCamera.GetPositionPointer());
 	houseMaterial.SetVec4(glm::vec4(0.2f, 0.2f, 0.25f, 1.0f), "ambient_color");
-	houseMaterial.SetVec4(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), "directional_color");
+	//houseMaterial.SetVec4(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), "directional_color");
 	houseMaterial.SetVec3(glm::vec3(-1.0f, 1.0f, -1.0f), "directional_vector");
-	houseMaterial.SetVec4(glm::vec4(0.2f, 0.1f, 0.1f, 1.0f), "point_0_color");
+	houseMaterial.SetVec4(glm::vec4(1.0f, 0.8f, 0.7f, 1.0f), "point_0_color");
 	houseMaterial.SetVec3(glm::vec3(10.0f, 5.0f, 10.0f), "point_0_position");
+	houseMaterial.SetFloat(1.0f, "specular_intensity");
 
 	Material lightUnlit = Material(&unlitColor);
 	lightUnlit.SetModel(&model_zero);
@@ -92,7 +93,18 @@ int main()
 	lightUnlit.SetProjection(&projection);
 	lightUnlit.SetVec4(glm::vec4(0.2f, 0.1f, 0.1f, 1.0f), "color");
 	
+	Material specularTest = Material(&phong);
+	specularTest.SetModel(&model_zero);
+	specularTest.SetView(&view);
+	specularTest.SetProjection(&projection);
+	specularTest.SetVec4(glm::vec4(0.2f, 0.2f, 0.25f, 1.0f), "ambient_color");
+	specularTest.SetVec4(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), "color");
+	specularTest.SetVec4(glm::vec4(0.2f, 0.1f, 0.1f, 1.0f), "point_0_color");
+	specularTest.SetFloat(10.0f, "specular_intensity");
+
+
 	Model lightGizmo = Model("Models/primitives/sphere.obj", &lightUnlit);
+	Model specularTestModel = Model("Models/primitives/sphere.obj", &specularTest);
 	Model houseModel = Model("Models/house_chunk_01/house_chunk_01.obj", &houseMaterial);
 	Model testPlanet = Model("Models/geonosis/geonosis.obj", &houseMaterial);
 
@@ -122,6 +134,12 @@ int main()
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
 	GraphNode lightGizmoNode = GraphNode(&lightGizmo, matrix);
 	rootNode.AddChild(&lightGizmoNode);
+
+	matrix = glm::mat4(1.0f);
+	matrix = glm::translate(matrix, glm::vec3(8.0f, 8.0f, 2.0f));
+	matrix = glm::scale(matrix, glm::vec3(0.25f, 0.25f, 0.25f));
+	GraphNode specularTestNode = GraphNode(&specularTestModel, matrix);
+	rootNode.AddChild(&specularTestNode);
 
 
 // ===================================================================================================================================================
@@ -191,7 +209,7 @@ int main()
 
 		// PROJECTION
 		if (!ortographic)
-			projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+			projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.0f);
 		else
 			projection = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.1f, 100.0f);
 

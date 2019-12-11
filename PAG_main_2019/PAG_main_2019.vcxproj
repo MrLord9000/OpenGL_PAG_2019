@@ -163,8 +163,10 @@
     <None Include="blinn-phong.vert" />
     <None Include="Shaders\gouraud.frag" />
     <None Include="Shaders\gouraud.vert" />
-    <None Include="Shaders\phong.frag" />
-    <None Include="Shaders\phong.vert" />
+    <None Include="Shaders\phong_view_space.frag" />
+    <None Include="Shaders\phong_view_space.vert" />
+    <None Include="Shaders\phong_world_space.frag" />
+    <None Include="Shaders\phong_world_space.vert" />
     <None Include="Shaders\explodeEffect.frag" />
     <None Include="Shaders\explodeEffect.vert" />
     <None Include="Shaders\geometryUnlit.frag" />
