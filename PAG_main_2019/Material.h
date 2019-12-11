@@ -51,7 +51,7 @@ public:
 		shader->SetMat4("projection", *projection);
 		if (viewPosition != nullptr)
 		{
-			shader->SetVec3("view_position", *viewPosition);
+			shader->SetVec3("viewPos", *viewPosition);
 		}
 
 		for (size_t i = 0; i < floats.size(); i++)

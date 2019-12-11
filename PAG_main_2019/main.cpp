@@ -49,7 +49,7 @@ int main()
 
 	Shader textureUnlit("Shaders/textureUnlit.vert", "Shaders/textureUnlit.frag");
 	Shader unlitColor("Shaders/unlitColor.vert", "Shaders/unlitColor.frag");
-	Shader phong("Shaders/phong_world_space.vert", "Shaders/phong_world_space.frag");
+	Shader phong("Shaders/phong.vert", "Shaders/phong.frag");
 	Shader gouraud("Shaders/gouraud.vert", "Shaders/gouraud.frag");
 
 // Runtime rendering properties (mainly for fun)
@@ -69,6 +69,16 @@ int main()
 
 	Camera mainCamera = Camera(glm::vec3(-5.0f, 5.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
+// Point lights
+
+	glm::vec3 pointLightPositions[4] =
+	{
+		glm::vec3(10.0f, 5.0f, 10.0f),
+		glm::vec3(-10.0f, 5.0f, 10.0f),
+		glm::vec3(10.0f, 5.0f, -10.0f),
+		glm::vec3(-10.0f, 5.0f, -10.0f)
+	};
+
 // Setup materials
 
 	glm::mat4 model_zero = glm::mat4(1.0f);
@@ -80,31 +90,83 @@ int main()
 	houseMaterial.SetView(&view);
 	houseMaterial.SetProjection(&projection);
 	houseMaterial.SetViewPosition(mainCamera.GetPositionPointer());
-	houseMaterial.SetVec4(glm::vec4(0.2f, 0.2f, 0.25f, 1.0f), "ambient_color");
-	//houseMaterial.SetVec4(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), "directional_color");
-	houseMaterial.SetVec3(glm::vec3(-1.0f, 1.0f, -1.0f), "directional_vector");
-	houseMaterial.SetVec4(glm::vec4(1.0f, 0.8f, 0.7f, 1.0f), "point_0_color");
-	houseMaterial.SetVec3(glm::vec3(10.0f, 5.0f, 10.0f), "point_0_position");
-	houseMaterial.SetFloat(1.0f, "specular_intensity");
+	houseMaterial.SetFloat(128.0f, "material.shininess");
+	// Directional light setup
+	houseMaterial.SetVec3(glm::vec3(-1.0f, -1.0f, -1.0f), "directionalLight.direction");
+	houseMaterial.SetVec3(glm::vec3(0.1f, 0.1f, 0.15f), "directionalLight.ambient");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "directionalLight.diffuse");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "directionalLight.specular");
+	// Point lights setup
+	// 1
+	houseMaterial.SetVec3(pointLightPositions[0], "pointLights[0].position");
+	houseMaterial.SetVec3(glm::vec3(0.2f, 0.2f, 0.2f), "pointLights[0].ambient");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 0.0f, 0.0f), "pointLights[0].diffuse");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "pointLights[0].specular");
+	houseMaterial.SetFloat(1.0f, "pointLights[0].constant");
+	houseMaterial.SetFloat(0.09f, "pointLights[0].linear");
+	houseMaterial.SetFloat(0.032f, "pointLights[0].quadratic");
+	// 2
+	houseMaterial.SetVec3(pointLightPositions[1], "pointLights[1].position");
+	houseMaterial.SetVec3(glm::vec3(0.2f, 0.2f, 0.2f), "pointLights[1].ambient");
+	houseMaterial.SetVec3(glm::vec3(0.0f, 1.0f, 0.0f), "pointLights[1].diffuse");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "pointLights[1].specular");
+	houseMaterial.SetFloat(1.0f, "pointLights[1].constant");
+	houseMaterial.SetFloat(0.09f, "pointLights[1].linear");
+	houseMaterial.SetFloat(0.032f, "pointLights[1].quadratic");
+	// 3
+	houseMaterial.SetVec3(pointLightPositions[2], "pointLights[2].position");
+	houseMaterial.SetVec3(glm::vec3(0.2f, 0.2f, 0.2f), "pointLights[2].ambient");
+	houseMaterial.SetVec3(glm::vec3(0.0f, 0.0f, 1.0f), "pointLights[2].diffuse");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "pointLights[2].specular");
+	houseMaterial.SetFloat(1.0f, "pointLights[2].constant");
+	houseMaterial.SetFloat(0.09f, "pointLights[2].linear");
+	houseMaterial.SetFloat(0.032f, "pointLights[2].quadratic");
+	// 4
+	houseMaterial.SetVec3(pointLightPositions[3], "pointLights[3].position");
+	houseMaterial.SetVec3(glm::vec3(0.2f, 0.2f, 0.2f), "pointLights[3].ambient");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 0.3f, 0.2f), "pointLights[3].diffuse");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "pointLights[3].specular");
+	houseMaterial.SetFloat(1.0f, "pointLights[3].constant");
+	houseMaterial.SetFloat(0.09f, "pointLights[3].linear");
+	houseMaterial.SetFloat(0.032f, "pointLights[3].quadratic");
+	// Static flashlight spot light values
+	houseMaterial.SetFloat(glm::cos(glm::radians(17.5f)), "spotLight.cutoff"); // We set the cosine of value in radians to save performance
+	houseMaterial.SetFloat(glm::cos(glm::radians(22.5f)), "spotLight.outerCutoff");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLight.diffuse");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLight.specular");
+	houseMaterial.SetFloat(1.0f, "spotLight.constant");
+	houseMaterial.SetFloat(0.09f, "spotLight.linear");
+	houseMaterial.SetFloat(0.032f, "spotLight.quadratic");
 
-	Material lightUnlit = Material(&unlitColor);
-	lightUnlit.SetModel(&model_zero);
-	lightUnlit.SetView(&view);
-	lightUnlit.SetProjection(&projection);
-	lightUnlit.SetVec4(glm::vec4(0.2f, 0.1f, 0.1f, 1.0f), "color");
-	
-	Material specularTest = Material(&phong);
-	specularTest.SetModel(&model_zero);
-	specularTest.SetView(&view);
-	specularTest.SetProjection(&projection);
-	specularTest.SetVec4(glm::vec4(0.2f, 0.2f, 0.25f, 1.0f), "ambient_color");
-	specularTest.SetVec4(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), "color");
-	specularTest.SetVec4(glm::vec4(0.2f, 0.1f, 0.1f, 1.0f), "point_0_color");
-	specularTest.SetFloat(10.0f, "specular_intensity");
+	// 1
+	Material lightUnlit0 = Material(&unlitColor);
+	lightUnlit0.SetModel(&model_zero);
+	lightUnlit0.SetView(&view);
+	lightUnlit0.SetProjection(&projection);
+	lightUnlit0.SetVec4(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), "color");
+	// 2
+	Material lightUnlit1 = Material(&unlitColor);
+	lightUnlit1.SetModel(&model_zero);
+	lightUnlit1.SetView(&view);
+	lightUnlit1.SetProjection(&projection);
+	lightUnlit1.SetVec4(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), "color");
+	// 3
+	Material lightUnlit2 = Material(&unlitColor);
+	lightUnlit2.SetModel(&model_zero);
+	lightUnlit2.SetView(&view);
+	lightUnlit2.SetProjection(&projection);
+	lightUnlit2.SetVec4(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "color");
+	// 4
+	Material lightUnlit3 = Material(&unlitColor);
+	lightUnlit3.SetModel(&model_zero);
+	lightUnlit3.SetView(&view);
+	lightUnlit3.SetProjection(&projection);
+	lightUnlit3.SetVec4(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), "color");
 
-
-	Model lightGizmo = Model("Models/primitives/sphere.obj", &lightUnlit);
-	Model specularTestModel = Model("Models/primitives/sphere.obj", &specularTest);
+	Model lightGizmo0 = Model("Models/primitives/sphere.obj", &lightUnlit0);
+	Model lightGizmo1 = Model("Models/primitives/sphere.obj", &lightUnlit1);
+	Model lightGizmo2 = Model("Models/primitives/sphere.obj", &lightUnlit2);
+	Model lightGizmo3 = Model("Models/primitives/sphere.obj", &lightUnlit3);
 	Model houseModel = Model("Models/house_chunk_01/house_chunk_01.obj", &houseMaterial);
 	Model testPlanet = Model("Models/geonosis/geonosis.obj", &houseMaterial);
 
@@ -117,29 +179,68 @@ int main()
 
 	matrix = glm::mat4(1.0f);
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	// 1
 	GraphNode house_01 = GraphNode(&houseModel, matrix);
 	rootNode.AddChild(&house_01);
+	// 2
 	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
 	GraphNode house_02 = GraphNode(&houseModel, matrix);
 	rootNode.AddChild(&house_02);
+	// 3
 	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 140.0f));
 	GraphNode house_03 = GraphNode(&houseModel, matrix);
 	rootNode.AddChild(&house_03);
+	// 4
 	matrix = glm::translate(matrix, glm::vec3(-140.0f, 0.0f, 0.0f));
 	GraphNode house_04 = GraphNode(&houseModel, matrix);
 	rootNode.AddChild(&house_04);
+	// 5
+	matrix = glm::translate(matrix, glm::vec3(-140.0f, 0.0f, 0.0f));
+	GraphNode house_05 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_05);
+	// 6
+	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -140.0f));
+	GraphNode house_06 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_06);
+	// 7
+	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -140.0f));
+	GraphNode house_07 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_07);
+	// 8
+	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
+	GraphNode house_08 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_08);
+	// 9
+	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
+	GraphNode house_09 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_09);
 
+	// Point light visualization
+	// 0
 	matrix = glm::mat4(1.0f);
-	matrix = glm::translate(matrix, glm::vec3(10.0f, 5.0f, 10.0f));
+	matrix = glm::translate(matrix, pointLightPositions[0]);
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode = GraphNode(&lightGizmo, matrix);
-	rootNode.AddChild(&lightGizmoNode);
-
+	GraphNode lightGizmoNode0 = GraphNode(&lightGizmo0, matrix);
+	rootNode.AddChild(&lightGizmoNode0);
+	// 1
 	matrix = glm::mat4(1.0f);
-	matrix = glm::translate(matrix, glm::vec3(8.0f, 8.0f, 2.0f));
-	matrix = glm::scale(matrix, glm::vec3(0.25f, 0.25f, 0.25f));
-	GraphNode specularTestNode = GraphNode(&specularTestModel, matrix);
-	rootNode.AddChild(&specularTestNode);
+	matrix = glm::translate(matrix, pointLightPositions[1]);
+	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	GraphNode lightGizmoNode1 = GraphNode(&lightGizmo1, matrix);
+	rootNode.AddChild(&lightGizmoNode1);
+	// 2
+	matrix = glm::mat4(1.0f);
+	matrix = glm::translate(matrix, pointLightPositions[2]);
+	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	GraphNode lightGizmoNode2 = GraphNode(&lightGizmo2, matrix);
+	rootNode.AddChild(&lightGizmoNode2);
+	// 3
+	matrix = glm::mat4(1.0f);
+	matrix = glm::translate(matrix, pointLightPositions[3]);
+	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	GraphNode lightGizmoNode3 = GraphNode(&lightGizmo3, matrix);
+	rootNode.AddChild(&lightGizmoNode3);
+
 
 
 // ===================================================================================================================================================
@@ -214,6 +315,15 @@ int main()
 			projection = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.1f, 100.0f);
 
 		// Perform per-frame transformations on objects
+		
+		// Flashlight transform
+		houseMaterial.SetVec3(mainCamera.GetPosition(), "spotLight.position");
+		houseMaterial.SetVec3(mainCamera.GetFront(), "spotLight.direction");
+
+		// Rainbow light
+		houseMaterial.SetVec3(glm::vec3(glm::sin(currentFrame), glm::sin(currentFrame + glm::radians(45.0f)), glm::sin(currentFrame + glm::radians(90.0f))), "pointLights[3].diffuse");
+		lightUnlit3.SetVec4(glm::vec4(glm::sin(currentFrame), glm::sin(currentFrame + glm::radians(45.0f)), glm::sin(currentFrame + glm::radians(90.0f)), 1.0f), "color");
+		
 		glm::mat4 rootTransform = glm::mat4(1.0f);
 		rootNode.Render(rootTransform);
 
