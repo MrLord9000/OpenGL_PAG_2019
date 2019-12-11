@@ -195,5 +195,11 @@
     <None Include="Shaders\phong_view_space.vert">
       <Filter>Shaders\phong_shading</Filter>
     </None>
+    <None Include="Shaders\phong.frag">
+      <Filter>Shaders\phong_shading</Filter>
+    </None>
+    <None Include="Shaders\phong.vert">
+      <Filter>Shaders\phong_shading</Filter>
+    </None>
   </ItemGroup>
 </Project>

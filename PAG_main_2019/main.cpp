@@ -49,7 +49,7 @@ int main()
 
 	Shader textureUnlit("Shaders/textureUnlit.vert", "Shaders/textureUnlit.frag");
 	Shader unlitColor("Shaders/unlitColor.vert", "Shaders/unlitColor.frag");
-	Shader phong("Shaders/phong_view_space.vert", "Shaders/phong_view_space.frag");
+	Shader phong("Shaders/phong_world_space.vert", "Shaders/phong_world_space.frag");
 	Shader gouraud("Shaders/gouraud.vert", "Shaders/gouraud.frag");
 
 // Runtime rendering properties (mainly for fun)
