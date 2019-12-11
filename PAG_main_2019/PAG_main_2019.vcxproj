@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -159,6 +159,12 @@
     <ClInclude Include="Thirdparty\ImGUI\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="blinn-phong.frag" />
+    <None Include="blinn-phong.vert" />
+    <None Include="Shaders\gouraud.frag" />
+    <None Include="Shaders\gouraud.vert" />
+    <None Include="Shaders\phong.frag" />
+    <None Include="Shaders\phong.vert" />
     <None Include="Shaders\explodeEffect.frag" />
     <None Include="Shaders\explodeEffect.vert" />
     <None Include="Shaders\geometryUnlit.frag" />
@@ -172,6 +178,8 @@
     <None Include="Shaders\proceduralOrbit.geom" />
     <None Include="Shaders\textureUnlit.frag" />
     <None Include="Shaders\textureUnlit.vert" />
+    <None Include="Shaders\unlitColor.frag" />
+    <None Include="Shaders\unlitColor.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

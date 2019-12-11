@@ -22,8 +22,8 @@
 #include "GraphNode.h"
 
 // Program constants
-const int WINDOW_WIDTH = 1024;
-const int WINDOW_HEIGHT = 1024;
+int WINDOW_WIDTH = 1920;
+int WINDOW_HEIGHT = 1080;
 
 const char* glsl_version = "#version 330";
 
@@ -34,12 +34,10 @@ float lastFrame = 0.0f; // Time of last frame
 float lastMouseX = 512;
 float lastMouseY = 512;
 bool firstMouse = true;
-float fov = 60.0f;
+float fov = 80.0f;
 
 int main()
 {
-	std::cout << "Wariant: " << 216835 % 4 + 1 << "\n";
-
 	GLFWwindow* window = nullptr;
 
 	if (initEverything(&window))
@@ -47,17 +45,12 @@ int main()
 		throw std::runtime_error("Program failed to initialize!");
 	}
 
-	//// Additional check how many shader attributes the graphics card allows (usually max 16)
-	//int nrAttributes;
-	//glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-	//std::cout << "Max vertex attribs supported: " << nrAttributes << "\n";
-	int maxVertices;
-	glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES, &maxVertices);
-	std::cout << "Max geometry output: " << maxVertices << "\n";
-
 // Compiling needed shader programs;
 
 	Shader textureUnlit("Shaders/textureUnlit.vert", "Shaders/textureUnlit.frag");
+	Shader unlitColor("Shaders/unlitColor.vert", "Shaders/unlitColor.frag");
+	Shader phong("Shaders/phong.vert", "Shaders/phong.frag");
+	Shader gouraud("Shaders/gouraud.vert", "Shaders/gouraud.frag");
 
 // Runtime rendering properties (mainly for fun)
 
@@ -82,11 +75,24 @@ int main()
 	glm::mat4 projection;
 	glm::mat4 view = glm::mat4(1.0f);
 
-	Material houseMaterial = Material(&textureUnlit);
+	Material houseMaterial = Material(&phong);
 	houseMaterial.SetModel(&model_zero);
 	houseMaterial.SetView(&view);
 	houseMaterial.SetProjection(&projection);
+	houseMaterial.SetViewPosition(mainCamera.GetPositionPointer());
+	houseMaterial.SetVec4(glm::vec4(0.2f, 0.2f, 0.25f, 1.0f), "ambient_color");
+	houseMaterial.SetVec4(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), "directional_color");
+	houseMaterial.SetVec3(glm::vec3(-1.0f, 1.0f, -1.0f), "directional_vector");
+	houseMaterial.SetVec4(glm::vec4(0.2f, 0.1f, 0.1f, 1.0f), "point_0_color");
+	houseMaterial.SetVec3(glm::vec3(10.0f, 5.0f, 10.0f), "point_0_position");
 
+	Material lightUnlit = Material(&unlitColor);
+	lightUnlit.SetModel(&model_zero);
+	lightUnlit.SetView(&view);
+	lightUnlit.SetProjection(&projection);
+	lightUnlit.SetVec4(glm::vec4(0.2f, 0.1f, 0.1f, 1.0f), "color");
+	
+	Model lightGizmo = Model("Models/primitives/sphere.obj", &lightUnlit);
 	Model houseModel = Model("Models/house_chunk_01/house_chunk_01.obj", &houseMaterial);
 	Model testPlanet = Model("Models/geonosis/geonosis.obj", &houseMaterial);
 
@@ -101,9 +107,21 @@ int main()
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
 	GraphNode house_01 = GraphNode(&houseModel, matrix);
 	rootNode.AddChild(&house_01);
+	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
+	GraphNode house_02 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_02);
+	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 140.0f));
+	GraphNode house_03 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_03);
+	matrix = glm::translate(matrix, glm::vec3(-140.0f, 0.0f, 0.0f));
+	GraphNode house_04 = GraphNode(&houseModel, matrix);
+	rootNode.AddChild(&house_04);
 
-	//GraphNode planet_01 = GraphNode(&testPlanet, matrix);
-	//rootNode.AddChild(&planet_01);
+	matrix = glm::mat4(1.0f);
+	matrix = glm::translate(matrix, glm::vec3(10.0f, 5.0f, 10.0f));
+	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	GraphNode lightGizmoNode = GraphNode(&lightGizmo, matrix);
+	rootNode.AddChild(&lightGizmoNode);
 
 
 // ===================================================================================================================================================
@@ -157,9 +175,9 @@ int main()
 		
 		glClearColor(background_color.x, background_color.y, background_color.z, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Remember to clear the depth buffer if you use depth testing
-		//glEnable(GL_CULL_FACE);
-		//glCullFace(GL_BACK);
-		//glFrontFace(GL_CW); // GL_CW - clockwise; GL_CCW - counter-clockwise
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW); // GL_CW - clockwise; GL_CCW - counter-clockwise
 		glEnable(GL_DEPTH_TEST);
 
 		if (wireframeMode)
@@ -170,23 +188,14 @@ int main()
 
 		// VIEW
 		view = Camera::viewMatrix;
-		//view = glm::mat4(1.0f);
-		//view = glm::translate(view, glm::vec3(-baseTranslation[0], -baseTranslation[1], -baseTranslation[2])); // Note that we're translating in the opposite direction we want our camera to move
-		//view = glm::rotate(view, glm::radians(baseRotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
-		//view = glm::rotate(view, glm::radians(baseRotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
-		//view = glm::rotate(view, glm::radians(baseRotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
 
 		// PROJECTION
 		if (!ortographic)
-			projection = glm::perspective(glm::radians(fov), (float)(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 100.0f);
+			projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 		else
 			projection = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.1f, 100.0f);
 
 		// Perform per-frame transformations on objects
-		//geonosis_pivot.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() / 10.0f));
-		//geonosis_node.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() * 3.0f));
-		//coruscant_pivot.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), -glm::radians(glfwGetTime()));
-		//coruscant_node.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(glfwGetTime() * 3.0f));
 		glm::mat4 rootTransform = glm::mat4(1.0f);
 		rootNode.Render(rootTransform);
 
@@ -314,18 +323,20 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	if (fov >= 1.0f && fov <= 80.0f)
+	if (fov >= 1.0f && fov <= 90.0f)
 		fov -= yoffset;
 	if (fov <= 1.0f)
 		fov = 1.0f;
-	if (fov >= 80.0f)
-		fov = 80.0f;
+	if (fov >= 90.0f)
+		fov = 90.0f;
 }
 
 // Callback function that gets called each time the window is resized
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+	WINDOW_WIDTH = width;
+	WINDOW_HEIGHT = height;
 }
 
 int initEverything(GLFWwindow** window)
@@ -335,6 +346,7 @@ int initEverything(GLFWwindow** window)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
 	// Creating a glfw window
 	*window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL PAG 1", nullptr, nullptr);
@@ -346,6 +358,7 @@ int initEverything(GLFWwindow** window)
 	}
 
 	glfwMakeContextCurrent(*window);
+	glfwSetWindowTitle(*window, "OpenGL is the best XD");
 
 // GLAD init ============================================================================
 

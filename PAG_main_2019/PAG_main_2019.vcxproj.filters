@@ -31,7 +31,13 @@
     <Filter Include="Shaders\explode_effect">
       <UniqueIdentifier>{f2af61ad-4c51-4f8d-ae2a-36b0ffcea029}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\simple_ambient">
+    <Filter Include="Shaders\unlit_color">
+      <UniqueIdentifier>{9dcf31d6-5af3-4c09-95f8-de7dccf6f271}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\gouraud_shading">
+      <UniqueIdentifier>{de7e11a1-83d8-40c2-8fe0-385751eaca95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\phong_shading">
       <UniqueIdentifier>{ed511a0c-2ec2-4781-9ac3-0fa7837cd212}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -162,6 +168,26 @@
     </None>
     <None Include="Shaders\proceduralOrbit.geom">
       <Filter>Shaders\geometry_unlit</Filter>
+    </None>
+    <None Include="blinn-phong.frag" />
+    <None Include="blinn-phong.vert" />
+    <None Include="Shaders\unlitColor.frag">
+      <Filter>Shaders\unlit_color</Filter>
+    </None>
+    <None Include="Shaders\unlitColor.vert">
+      <Filter>Shaders\unlit_color</Filter>
+    </None>
+    <None Include="Shaders\phong.frag">
+      <Filter>Shaders\phong_shading</Filter>
+    </None>
+    <None Include="Shaders\phong.vert">
+      <Filter>Shaders\phong_shading</Filter>
+    </None>
+    <None Include="Shaders\gouraud.frag">
+      <Filter>Shaders\gouraud_shading</Filter>
+    </None>
+    <None Include="Shaders\gouraud.vert">
+      <Filter>Shaders\gouraud_shading</Filter>
     </None>
   </ItemGroup>
 </Project>

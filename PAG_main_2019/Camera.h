@@ -19,6 +19,7 @@ public:
 
 	float GetSpeed();
 	glm::vec3 GetPosition() { return position; }
+	glm::vec3* GetPositionPointer() { return &position; }
 	glm::vec3 GetFront() { return front; }
 	glm::vec3 GetUp() { return up; }
 

@@ -6,6 +6,7 @@ void Mesh::Draw(Material* mat)
 	{
 		GLuint diffuseNr = 1;
 		GLuint specularNr = 1;
+		GLuint occlusionNr = 1;
 
 		// Handle shader textures =========================
 		for (size_t i = 0; i < textures.size(); i++)
@@ -27,11 +28,16 @@ void Mesh::Draw(Material* mat)
 				number = std::to_string(specularNr);
 				specularNr++;
 			}
+			else if (name == "texture_occlusion")
+			{
+				number = std::to_string(occlusionNr);
+				occlusionNr++;
+			}
 
 			//std::string fullName = "material." + name + number;
 			std::string fullName = name + number;
 
-			mat->GetShader()->SetFloat(fullName.c_str(), i);
+			mat->GetShader()->SetInt(fullName.c_str(), i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 		}
 		glActiveTexture(GL_TEXTURE0);
