@@ -2,7 +2,7 @@
 
 #include "Shader.h"
 
-#include <vector>
+#include <map>
 #include <string>
 
 class Material
@@ -20,26 +20,54 @@ public:
 
 	void SetFloat(float value, const std::string name)
 	{
-		floats.push_back(value);
-		float_names.push_back(name);
+		std::map<std::string, float>::iterator it = floats.find(name);
+		if (it != floats.end())
+		{
+			it->second = value;
+		}
+		else
+		{
+			floats.insert({ name, value });
+		}
 	}
 
 	void SetVec4(glm::vec4 value, const std::string name)
 	{
-		vector4s.push_back(value);
-		vec4_names.push_back(name);
+		std::map<std::string, glm::vec4>::iterator it = vector4s.find(name);
+		if (it != vector4s.end())
+		{
+			it->second = value;
+		}
+		else
+		{
+			vector4s.insert({ name, value });
+		}
 	}
 
 	void SetVec3(glm::vec3 value, const std::string name)
 	{
-		vector3s.push_back(value);
-		vec3_names.push_back(name);
+		std::map<std::string, glm::vec3>::iterator it = vector3s.find(name);
+		if (it != vector3s.end())
+		{
+			it->second = value;
+		}
+		else
+		{
+			vector3s.insert({ name, value });
+		}
 	}
 
 	void SetInt(int value, const std::string name)
 	{
-		ints.push_back(value);
-		int_names.push_back(name);
+		std::map<std::string, int>::iterator it = ints.find(name);
+		if (it != ints.end())
+		{
+			it->second = value;
+		}
+		else
+		{
+			ints.insert({ name, value });
+		}
 	}
 
 	void Use()
@@ -54,24 +82,24 @@ public:
 			shader->SetVec3("viewPos", *viewPosition);
 		}
 
-		for (size_t i = 0; i < floats.size(); i++)
+		for (auto it = floats.begin(); it != floats.end(); it++)
 		{
-			shader->SetFloat(float_names[i], floats[i]);
+			shader->SetFloat(it->first, it->second);
 		}
 
-		for (size_t i = 0; i < vector3s.size(); i++)
+		for (auto it = vector3s.begin(); it != vector3s.end(); it++)
 		{
-			shader->SetVec3(vec3_names[i], vector3s[i]);
+			shader->SetVec3(it->first, it->second);
 		}
 
-		for (size_t i = 0; i < vector4s.size(); i++)
+		for (auto it = vector4s.begin(); it != vector4s.end(); it++)
 		{
-			shader->SetVec4(vec4_names[i], vector4s[i]);
+			shader->SetVec4(it->first, it->second);
 		}
 
-		for (size_t i = 0; i < ints.size(); i++)
+		for (auto it = ints.begin(); it != ints.end(); it++)
 		{
-			shader->SetInt(int_names[i], ints[i]);
+			shader->SetInt(it->first, it->second);
 		}
 	}
 
@@ -81,15 +109,8 @@ private:
 	glm::mat4* model = nullptr, * view = nullptr, * projection = nullptr;
 	glm::vec3* viewPosition = nullptr;
 
-	std::vector<float> floats;
-	std::vector<std::string> float_names;
-
-	std::vector<glm::vec4> vector4s;
-	std::vector<std::string> vec4_names;
-
-	std::vector<glm::vec3> vector3s;
-	std::vector<std::string> vec3_names;
-
-	std::vector<int> ints;
-	std::vector<std::string> int_names;
+	std::map<std::string, float> floats;
+	std::map<std::string, int> ints;
+	std::map<std::string, glm::vec4> vector4s;
+	std::map<std::string, glm::vec3> vector3s;
 };

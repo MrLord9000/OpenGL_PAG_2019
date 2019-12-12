@@ -321,9 +321,12 @@ int main()
 		houseMaterial.SetVec3(mainCamera.GetFront(), "spotLight.direction");
 
 		// Rainbow light
-		houseMaterial.SetVec3(glm::vec3(glm::sin(currentFrame), glm::sin(currentFrame + glm::radians(45.0f)), glm::sin(currentFrame + glm::radians(90.0f))), "pointLights[3].diffuse");
-		lightUnlit3.SetVec4(glm::vec4(glm::sin(currentFrame), glm::sin(currentFrame + glm::radians(45.0f)), glm::sin(currentFrame + glm::radians(90.0f)), 1.0f), "color");
+		houseMaterial.SetVec3(glm::vec3(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f)))), "pointLights[3].diffuse");
+		lightUnlit3.SetVec4(glm::vec4(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f))), 1.0f), "color");
 		
+		lightGizmoNode3.SetLocalPosition(glm::vec3(glm::cos(currentFrame) * 7.0f, 4.0f, glm::sin(currentFrame) * 7.0f));
+		houseMaterial.SetVec3(glm::vec3(glm::cos(currentFrame) * 7.0f, 4.0f, glm::sin(currentFrame) * 7.0f), "pointLights[3].position");
+
 		glm::mat4 rootTransform = glm::mat4(1.0f);
 		rootNode.Render(rootTransform);
 

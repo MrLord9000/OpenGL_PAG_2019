@@ -16,6 +16,14 @@ public:
 	void AddChild(GraphNode* node) { children.push_back(node); }
 
 	// Transform manipulation functions ---------------------------------------------------------
+	void SetLocalPosition(glm::vec3 localPosition)
+	{
+		localTransform[3][0] = localPosition.x;
+		localTransform[3][1] = localPosition.y;
+		localTransform[3][2] = localPosition.z;
+		dirty_ = true;
+	}
+	
 	void Move(glm::vec3 vector) 
 	{ 
 		localTransform = glm::translate(localTransform, vector); 
