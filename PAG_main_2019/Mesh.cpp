@@ -35,12 +35,11 @@ void Mesh::Draw(Material* mat)
 			}
 
 			std::string fullName = "material." + name + number;
-			//std::string fullName = name + number;
 
 			mat->GetShader()->SetInt(fullName.c_str(), i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 		}
-		glActiveTexture(GL_TEXTURE0);
+		//glActiveTexture(GL_TEXTURE0);
 
 		mat->Use();
 

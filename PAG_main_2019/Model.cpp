@@ -151,7 +151,7 @@ GLuint Model::TextureFromFile(const char* path, std::string directory)
 
 	if (data)
 	{
-		GLenum format;
+		GLenum format = 0;
 		if (nrChannels == 1)
 			format = GL_RED;
 		else if (nrChannels == 3)

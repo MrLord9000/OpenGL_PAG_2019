@@ -40,6 +40,9 @@
     <Filter Include="Shaders\phong_shading">
       <UniqueIdentifier>{ed511a0c-2ec2-4781-9ac3-0fa7837cd212}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\blinn-phong_shading">
+      <UniqueIdentifier>{e16b27d3-e93a-4ec5-9d79-450ce96544d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -200,6 +203,12 @@
     </None>
     <None Include="Shaders\phong.vert">
       <Filter>Shaders\phong_shading</Filter>
+    </None>
+    <None Include="Shaders\blinn-phong.frag">
+      <Filter>Shaders\blinn-phong_shading</Filter>
+    </None>
+    <None Include="Shaders\blinn-phong.vert">
+      <Filter>Shaders\blinn-phong_shading</Filter>
     </None>
   </ItemGroup>
 </Project>

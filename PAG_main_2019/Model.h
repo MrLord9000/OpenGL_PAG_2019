@@ -37,6 +37,7 @@ public:
 
 	Material* GetMaterial() { return material; }
 	void SetMaterial(Material* mat) { material = mat; }
+	static GLuint TextureFromFile(const char* path, std::string directory);
 
 private:
 	// Model data
@@ -51,5 +52,4 @@ private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
-	GLuint TextureFromFile(const char* path, std::string directory);
 };

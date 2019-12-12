@@ -161,6 +161,8 @@
   <ItemGroup>
     <None Include="blinn-phong.frag" />
     <None Include="blinn-phong.vert" />
+    <None Include="Shaders\blinn-phong.frag" />
+    <None Include="Shaders\blinn-phong.vert" />
     <None Include="Shaders\gouraud.frag" />
     <None Include="Shaders\gouraud.vert" />
     <None Include="Shaders\phong.frag" />

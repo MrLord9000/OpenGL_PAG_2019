@@ -70,6 +70,19 @@ public:
 		}
 	}
 
+	void SetTextureID(int id, const std::string name)
+	{
+		std::map<std::string, int>::iterator it = textures.find(name);
+		if (it != textures.end())
+		{
+			it->second = id;
+		}
+		else
+		{
+			textures.insert({ name, id });
+		}
+	}
+
 	void Use()
 	{
 		shader->Use();
@@ -101,6 +114,14 @@ public:
 		{
 			shader->SetInt(it->first, it->second);
 		}
+
+		for (auto it = textures.begin(); it != textures.end(); it++)
+		{
+			glActiveTexture(GL_TEXTURE0 + it->second);
+			shader->SetInt(it->first, it->second);
+			glBindTexture(GL_TEXTURE_2D, it->second);
+		}
+		glActiveTexture(GL_TEXTURE0);
 	}
 
 private:
@@ -111,6 +132,7 @@ private:
 
 	std::map<std::string, float> floats;
 	std::map<std::string, int> ints;
+	std::map<std::string, int> textures;
 	std::map<std::string, glm::vec4> vector4s;
 	std::map<std::string, glm::vec3> vector3s;
 };
