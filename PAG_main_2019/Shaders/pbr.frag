@@ -33,6 +33,7 @@ uniform PointLight pointLights[NR_POINT_LIGHTS];
 struct SpotLight
 {
 	float intensity;
+	float range;
 	vec3 position;
 	vec3 direction;
 	vec3 color;
@@ -101,12 +102,14 @@ void main()
 // Point light ---------------------------------------------------------------------------------
 	for (int i = 0; i < NR_POINT_LIGHTS; i++)
 	{
-		Lo += calcPointLight(pointLights[i]) * pointLights[i].intensity;
+		Lo += calcPointLight(pointLights[i]);
 	}
 	
 // Spot light -----------------------------------------------------------------------------------
-//	for (int i = 0; i < NR_SPOT_LIGHTS; i++)
-//		result += calcSpotLight(spotLights[i], norm, FragPos, viewDir);
+	for (int i = 0; i < NR_SPOT_LIGHTS; i++)
+	{
+		Lo += calcSpotLight(spotLights[i]);
+	}
 
 // Makeshift ambient lightning
 	vec3 ambient = vec3(0.01f) * albedo * ao;
@@ -125,8 +128,8 @@ vec3 calcPointLight(PointLight light)
 	vec3 L = normalize(light.position - FragPos);
 	vec3 H = normalize(V + L);
 	float distance = length(light.position - FragPos);
-	//float attenuation = 1.0f / (distance);
-	float attenuation = pow(clamp(1 - pow((distance/light.radius), 4.0f), 0.0f, 1.0f), 2.0f) / (distance * distance + 1.0f);
+	//float attenuation = 1.0f / (distance * distance);
+	float attenuation = pow(clamp(1 - pow((distance/light.radius), 4.0f), 0.0f, 1.0f), 2.0f) / (distance * distance + 1.0f);  // Updated to inverse square proposed by Unreal devs
 	vec3 radiance = light.color * light.intensity * attenuation;
 
 	// Cook-Torrance BDRF
@@ -135,7 +138,7 @@ vec3 calcPointLight(PointLight light)
 	vec3 F = fresnelSchlick(max(dot(H, V), 0.0f), F0);
 
 	vec3 nominator = NDF * G * F;
-	float denominator = 4 * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f) + 0.0001f; // added 0.001f to prevent division by zero
+	float denominator = 4 * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f) + 0.001f; // added 0.001f to prevent division by zero
 	vec3 specular = nominator / denominator;
 
 	// Calculate specular/albedo distribution
@@ -154,9 +157,6 @@ vec3 calcDirectionalLight(DirectionalLight light)
 {
 	vec3 L = normalize(light.direction);
 	vec3 H = normalize(V + L);
-	//float distance = length(light.position - FragPos);
-	//float attenuation = 1.0f / (distance);
-	//float attenuation = pow(clamp(1 - pow((distance/light.radius), 4.0f), 0.0f, 1.0f), 2.0f) / (distance * distance + 1.0f);
 	vec3 radiance = light.color * light.intensity;
 
 	// Cook-Torrance BDRF
@@ -185,9 +185,11 @@ vec3 calcSpotLight(SpotLight light)
 	vec3 L = normalize(light.position - FragPos);
 	vec3 H = normalize(V + L);
 	float distance = length(light.position - FragPos);
-	//float attenuation = 1.0f / (distance);
-	float attenuation = pow(clamp(1 - pow((distance/light.radius), 4.0f), 0.0f, 1.0f), 2.0f) / (distance * distance + 1.0f);
-	vec3 radiance = light.color * light.intensity * attenuation;
+	float attenuation = pow(clamp(1 - pow((distance/light.range), 4.0f), 0.0f, 1.0f), 2.0f) / (distance * distance + 1.0f);
+	float theta = dot(L, normalize(-light.direction));
+	float epsilon = light.cutoff - light.outerCutoff;
+	float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0f, 1.0f);
+	vec3 radiance = light.color * light.intensity * attenuation * intensity;
 
 	// Cook-Torrance BDRF
 	float NDF = DistributionGGX(N, H, roughness);
@@ -250,31 +252,3 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 	cosTheta = min(cosTheta, 1.0f);
 	return F0 + (1.0f - F0) * pow(1.0f - cosTheta, 5.0f);
 }
-
-//vec3 calcSpotLight(SpotLight spotLight, vec3 norm, vec3 fragPos, vec3 viewDir)
-//{
-//	vec3 lightDir = normalize(spotLight.position - fragPos);
-//	float theta = dot(lightDir, normalize(-spotLight.direction));
-//	float epsilon = spotLight.cutoff - spotLight.outerCutoff;
-//	float intensity = clamp((theta - spotLight.outerCutoff) / epsilon, 0.0f, 1.0f);
-//
-//	// Skipping ambient
-//
-//	// Diffuse
-//	float diff = max(dot(norm, lightDir), 0.0f);
-//	vec3 spotDiffuse = spotLight.diffuse * diff * texture(material.texture_diffuse1, Texcoord).rgb;// * texture(spotLight.cookie, fragPos.xy).rgb;
-//
-//	// Specular
-//	vec3 reflectDir = reflect(-lightDir, norm);
-//	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-//	vec3 spotSpecular = spotLight.specular * spec * texture(material.texture_specular1, Texcoord).rgb;
-//
-//	// Attenuation value
-//	float distance = length(spotLight.position - fragPos);
-//	float attenuation = 1.0f / (spotLight.constant + spotLight.linear * distance + spotLight.quadratic * (distance * distance));
-//
-//	spotDiffuse *= attenuation * intensity;
-//	spotSpecular *= attenuation * intensity;
-//
-//	return (spotDiffuse + spotSpecular) * spotLight.intensity;
-//}
