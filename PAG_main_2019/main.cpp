@@ -50,6 +50,7 @@ int main()
 	Shader textureUnlit("Shaders/textureUnlit.vert", "Shaders/textureUnlit.frag");
 	Shader unlitColor("Shaders/unlitColor.vert", "Shaders/unlitColor.frag");
 	Shader phong("Shaders/blinn-phong.vert", "Shaders/blinn-phong.frag");
+	Shader pbr("Shaders/pbr.vert", "Shaders/pbr.frag");
 	Shader gouraud("Shaders/gouraud.vert", "Shaders/gouraud.frag");
 
 
@@ -79,84 +80,65 @@ int main()
 	glm::mat4 projection;
 	glm::mat4 view = glm::mat4(1.0f);
 
-	Material houseMaterial = Material(&phong);
+	Material houseMaterial = Material(&pbr);
 	houseMaterial.SetModel(&model_zero);
 	houseMaterial.SetView(&view);
 	houseMaterial.SetProjection(&projection);
 	houseMaterial.SetViewPosition(mainCamera.GetPositionPointer());
-	houseMaterial.SetFloat(128.0f, "material.shininess");
 	// Directional light setup
-	houseMaterial.SetVec3(glm::vec3(-1.0f, -1.0f, -1.0f), "directionalLight.direction");
-	houseMaterial.SetVec3(glm::vec3(0.1f, 0.1f, 0.15f), "directionalLight.ambient");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "directionalLight.diffuse");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "directionalLight.specular");
-	houseMaterial.SetFloat(1.0f, "directionalLight.intensity");
+	houseMaterial.SetVec3(glm::vec3(-1.0f, 1.0f, -1.0f), "directionalLight.direction");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "directionalLight.color");
+	houseMaterial.SetFloat(6.0f, "directionalLight.intensity");
 	// Point lights setup
 	// 1
 	houseMaterial.SetVec3(pointLightPositions[0], "pointLights[0].position");
-	houseMaterial.SetVec3(glm::vec3(0.2f, 0.2f, 0.2f), "pointLights[0].ambient");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 0.0f, 0.0f), "pointLights[0].diffuse");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "pointLights[0].specular");
-	houseMaterial.SetFloat(1.0f, "pointLights[0].constant");
-	houseMaterial.SetFloat(0.09f, "pointLights[0].linear");
-	houseMaterial.SetFloat(0.032f, "pointLights[0].quadratic");
-	houseMaterial.SetFloat(1.0f, "pointLights[0].intensity");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 0.0f, 0.0f), "pointLights[0].color");
+	houseMaterial.SetFloat(8.0f, "pointLights[0].intensity");
+	houseMaterial.SetFloat(100.0f, "pointLights[0].radius");
 	// 2
 	houseMaterial.SetVec3(pointLightPositions[1], "pointLights[1].position");
-	houseMaterial.SetVec3(glm::vec3(0.2f, 0.2f, 0.2f), "pointLights[1].ambient");
-	houseMaterial.SetVec3(glm::vec3(0.0f, 1.0f, 0.0f), "pointLights[1].diffuse");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "pointLights[1].specular");
-	houseMaterial.SetFloat(1.0f, "pointLights[1].constant");
-	houseMaterial.SetFloat(0.09f, "pointLights[1].linear");
-	houseMaterial.SetFloat(0.032f, "pointLights[1].quadratic");
-	houseMaterial.SetFloat(1.0f, "pointLights[1].intensity");
+	houseMaterial.SetVec3(glm::vec3(0.0f, 1.0f, 0.0f), "pointLights[1].color");
+	houseMaterial.SetFloat(12.0f, "pointLights[1].intensity");
+	houseMaterial.SetFloat(50.0f, "pointLights[1].radius");
 	// 3
 	houseMaterial.SetVec3(pointLightPositions[2], "pointLights[2].position");
-	houseMaterial.SetVec3(glm::vec3(0.2f, 0.2f, 0.2f), "pointLights[2].ambient");
-	houseMaterial.SetVec3(glm::vec3(0.0f, 0.0f, 1.0f), "pointLights[2].diffuse");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "pointLights[2].specular");
-	houseMaterial.SetFloat(1.0f, "pointLights[2].constant");
-	houseMaterial.SetFloat(0.09f, "pointLights[2].linear");
-	houseMaterial.SetFloat(0.032f, "pointLights[2].quadratic");
-	houseMaterial.SetFloat(1.0f, "pointLights[2].intensity");
+	houseMaterial.SetVec3(glm::vec3(0.0f, 0.0f, 1.0f), "pointLights[2].color");
+	houseMaterial.SetFloat(10.0f, "pointLights[2].intensity");
+	houseMaterial.SetFloat(25.0f, "pointLights[2].radius");
 	// 4
 	houseMaterial.SetVec3(pointLightPositions[3], "pointLights[3].position");
-	houseMaterial.SetVec3(glm::vec3(0.2f, 0.2f, 0.2f), "pointLights[3].ambient");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 0.3f, 0.2f), "pointLights[3].diffuse");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "pointLights[3].specular");
-	houseMaterial.SetFloat(1.0f, "pointLights[3].constant");
-	houseMaterial.SetFloat(0.09f, "pointLights[3].linear");
-	houseMaterial.SetFloat(0.032f, "pointLights[3].quadratic");
-	houseMaterial.SetFloat(1.0f, "pointLights[3].intensity");
-	// Static flashlight spot light values
-	houseMaterial.SetFloat(glm::cos(glm::radians(17.5f)), "spotLights[0].cutoff"); // We set the cosine of value in radians to save performance
-	houseMaterial.SetFloat(glm::cos(glm::radians(22.5f)), "spotLights[0].outerCutoff");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[0].diffuse");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[0].specular");
-	houseMaterial.SetFloat(1.0f, "spotLights[0].constant");
-	houseMaterial.SetFloat(0.09f, "spotLights[0].linear");
-	houseMaterial.SetFloat(0.032f, "spotLights[0].quadratic");
-	houseMaterial.SetFloat(1.0f, "spotLights[0].intensity");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 0.3f, 0.2f), "pointLights[3].color");
+	houseMaterial.SetFloat(10.0f, "pointLights[3].intensity");
+	houseMaterial.SetFloat(25.0f, "pointLights[3].radius");
+	//// Static flashlight spot light values
+	//houseMaterial.SetFloat(glm::cos(glm::radians(17.5f)), "spotLights[0].cutoff"); // We set the cosine of value in radians to save performance
+	//houseMaterial.SetFloat(glm::cos(glm::radians(22.5f)), "spotLights[0].outerCutoff");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[0].diffuse");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[0].specular");
+	//houseMaterial.SetFloat(1.0f, "spotLights[0].constant");
+	//houseMaterial.SetFloat(0.09f, "spotLights[0].linear");
+	//houseMaterial.SetFloat(0.032f, "spotLights[0].quadratic");
+	//houseMaterial.SetFloat(1.0f, "spotLights[0].intensity");
 	// 1
-	houseMaterial.SetVec3(spotLightPositions[0], "spotLights[1].position");
-	houseMaterial.SetFloat(glm::cos(glm::radians(25.0f)), "spotLights[1].cutoff"); // We set the cosine of value in radians to save performance
-	houseMaterial.SetFloat(glm::cos(glm::radians(35.0f)), "spotLights[1].outerCutoff");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[1].diffuse");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[1].specular");
-	houseMaterial.SetFloat(1.0f, "spotLights[1].constant");
-	houseMaterial.SetFloat(0.09f, "spotLights[1].linear");
-	houseMaterial.SetFloat(0.032f, "spotLights[1].quadratic");
-	houseMaterial.SetFloat(1.0f, "spotLights[1].intensity");
-	// 2
-	houseMaterial.SetVec3(spotLightPositions[1], "spotLights[2].position");
-	houseMaterial.SetFloat(glm::cos(glm::radians(25.0f)), "spotLights[2].cutoff"); // We set the cosine of value in radians to save performance
-	houseMaterial.SetFloat(glm::cos(glm::radians(35.0f)), "spotLights[2].outerCutoff");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[2].diffuse");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[2].specular");
-	houseMaterial.SetFloat(1.0f, "spotLights[2].constant");
-	houseMaterial.SetFloat(0.09f, "spotLights[2].linear");
-	houseMaterial.SetFloat(0.032f, "spotLights[2].quadratic");
-	houseMaterial.SetFloat(1.0f, "spotLights[2].intensity");
+	//houseMaterial.SetVec3(spotLightPositions[0], "spotLights[1].position");
+	//houseMaterial.SetFloat(glm::cos(glm::radians(25.0f)), "spotLights[1].cutoff"); // We set the cosine of value in radians to save performance
+	//houseMaterial.SetFloat(glm::cos(glm::radians(35.0f)), "spotLights[1].outerCutoff");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[1].diffuse");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[1].specular");
+	//houseMaterial.SetFloat(1.0f, "spotLights[1].constant");
+	//houseMaterial.SetFloat(0.09f, "spotLights[1].linear");
+	//houseMaterial.SetFloat(0.032f, "spotLights[1].quadratic");
+	//houseMaterial.SetFloat(1.0f, "spotLights[1].intensity");
+	//// 2
+	//houseMaterial.SetVec3(spotLightPositions[1], "spotLights[2].position");
+	//houseMaterial.SetFloat(glm::cos(glm::radians(25.0f)), "spotLights[2].cutoff"); // We set the cosine of value in radians to save performance
+	//houseMaterial.SetFloat(glm::cos(glm::radians(35.0f)), "spotLights[2].outerCutoff");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[2].diffuse");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[2].specular");
+	//houseMaterial.SetFloat(1.0f, "spotLights[2].constant");
+	//houseMaterial.SetFloat(0.09f, "spotLights[2].linear");
+	//houseMaterial.SetFloat(0.032f, "spotLights[2].quadratic");
+	//houseMaterial.SetFloat(1.0f, "spotLights[2].intensity");
 
 	// 1
 	Material lightUnlit0 = Material(&unlitColor);
@@ -183,12 +165,11 @@ int main()
 	lightUnlit3.SetProjection(&projection);
 	lightUnlit3.SetVec4(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), "color");
 
+	Model houseModel = Model("Models/house_chunk_01_pbr/house_chunk_01_pbr.obj", &houseMaterial);
 	Model lightGizmo0 = Model("Models/primitives/sphere.obj", &lightUnlit0);
 	Model lightGizmo1 = Model("Models/primitives/sphere.obj", &lightUnlit1);
 	Model lightGizmo2 = Model("Models/primitives/sphere.obj", &lightUnlit2);
 	Model lightGizmo3 = Model("Models/primitives/sphere.obj", &lightUnlit3);
-	Model houseModel = Model("Models/house_chunk_01/house_chunk_01.obj", &houseMaterial);
-	Model testPlanet = Model("Models/geonosis/geonosis.obj", &houseMaterial);
 
 	// Planets & orbits =====================================================================================
 
@@ -281,13 +262,17 @@ int main()
 
 // Light control
 	bool pointEnabled = true, spot0Enabled = true, spot1Enabled = true, directionalEnabled = true, rainbow = true;
+
+	float directionalIntensity = 1.0f;
+
 	float pointColor[3] = { 0.0f, 0.0f, 0.0f };
 	float spot0Color[3] = { 0.0f, 0.0f, 0.0f };
 	float spot1Color[3] = { 0.0f, 0.0f, 0.0f };
-	float directionalColor[3] = { 0.0f, 0.0f, 0.0f };
+	float directionalColor[3] = { 1.0f, 1.0f, 1.0f };
 
 	float spot0Direction[3] = { -1.0f, -1.0f, -1.0f };
 	float spot1Direction[3] = { 1.0f, -1.0f, 1.0f };
+	float directionalDirection[3] = { -1.0f, 1.0f, -1.0f };
 
 // ===================================================================================================================================================
 // Render Loop =======================================================================================================================================
@@ -334,6 +319,8 @@ int main()
 		ImGui::Text("Directional light");
 		ImGui::Checkbox("Directional Enabled", &directionalEnabled);
 		ImGui::SliderFloat3("Directional Color", directionalColor, 0.0f, 1.0f);
+		ImGui::SliderFloat3("Directional Direction", directionalDirection, -1.0f, 1.0f);
+		ImGui::SliderFloat("Directional Intensity", &directionalIntensity, 0.0f, 10.0f);
 
 		ImGui::Text("Camera Controls");
 		//if (ImGui::Button("Ortographic")) ortographic = !ortographic;
@@ -355,7 +342,7 @@ int main()
 		glFrontFace(GL_CCW); // GL_CW - clockwise; GL_CCW - counter-clockwise
 		glEnable(GL_DEPTH_TEST);
 
-		glDisable(GL_FRAMEBUFFER_SRGB);
+		//glDisable(GL_FRAMEBUFFER_SRGB);
 
 		if (wireframeMode)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -380,16 +367,16 @@ int main()
 		}
 		else
 		{
-			houseMaterial.SetFloat(1.0f, "pointLights[3].intensity");
+			houseMaterial.SetFloat(10.0f, "pointLights[3].intensity");
 			// Rainbow light
 			if (rainbow)
 			{
-				houseMaterial.SetVec3(glm::vec3(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f)))), "pointLights[3].diffuse");
+				houseMaterial.SetVec3(glm::vec3(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f)))), "pointLights[3].color");
 				lightUnlit3.SetVec4(glm::vec4(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f))), 1.0f), "color");
 			}
 			else
 			{
-				houseMaterial.SetVec3(glm::vec3(pointColor[0], pointColor[1], pointColor[2]), "pointLights[3].diffuse");
+				houseMaterial.SetVec3(glm::vec3(pointColor[0], pointColor[1], pointColor[2]), "pointLights[3].color");
 				lightUnlit3.SetVec4(glm::vec4(pointColor[0], pointColor[1], pointColor[2], 1.0f), "color");
 			}
 		}
@@ -423,7 +410,9 @@ int main()
 		}
 		else
 		{
-			houseMaterial.SetFloat(1.0f, "directionalLight.intensity");
+			houseMaterial.SetVec3(glm::vec3(directionalColor[0], directionalColor[1], directionalColor[2]), "directionalLight.color");
+			houseMaterial.SetVec3(glm::vec3(directionalDirection[0], directionalDirection[1], directionalDirection[2]), "directionalLight.direction");
+			houseMaterial.SetFloat(directionalIntensity, "directionalLight.intensity");
 		}
 		// Flashlight transform
 		houseMaterial.SetVec3(mainCamera.GetPosition(), "spotLights[0].position");
@@ -440,7 +429,7 @@ int main()
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		glEnable(GL_FRAMEBUFFER_SRGB);
+		//glEnable(GL_FRAMEBUFFER_SRGB);
 		// Check and call events, swap buffers ++++++++++
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -5,7 +5,7 @@
 void Model::LoadModel(std::string path)
 {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -58,6 +58,12 @@ Mesh Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		vector.z = mesh->mNormals[i].z;
 		vertex.normal = vector;
 
+		// Tangents
+		vector.x = mesh->mTangents[i].x;
+		vector.y = mesh->mTangents[i].y;
+		vector.z = mesh->mTangents[i].z;
+		vertex.tangent = vector;
+
 		// Texcoords
 		if (mesh->mTextureCoords[0])
 		{
@@ -92,8 +98,16 @@ Mesh Model::ProcessMesh(aiMesh * mesh, const aiScene * scene)
 		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal"); // Setting HEIGHT as a type because obj sucks when it comes to texture types
+		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+		std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
+		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_roughness");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+		std::vector<Texture> metallicMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, "texture_metallic");
+		textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
 
 		std::vector<Texture> occlusionMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_occlusion");
 		textures.insert(textures.end(), occlusionMaps.begin(), occlusionMaps.end());

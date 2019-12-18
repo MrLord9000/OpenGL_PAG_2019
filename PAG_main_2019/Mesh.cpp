@@ -7,6 +7,7 @@ void Mesh::Draw(Material* mat)
 		GLuint diffuseNr = 1;
 		GLuint specularNr = 1;
 		GLuint occlusionNr = 1;
+		GLuint normalNr = 1;
 
 		// Handle shader textures =========================
 		for (size_t i = 0; i < textures.size(); i++)
@@ -23,7 +24,17 @@ void Mesh::Draw(Material* mat)
 				number = std::to_string(diffuseNr);
 				diffuseNr++;
 			}
-			else if (name == "texture_specular")
+			else if (name == "texture_normal")
+			{
+				number = std::to_string(normalNr);
+				normalNr++;
+			}
+			else if (name == "texture_roughness")
+			{
+				number = std::to_string(specularNr);
+				specularNr++;
+			}
+			else if (name == "texture_metallic")
 			{
 				number = std::to_string(specularNr);
 				specularNr++;
@@ -89,7 +100,10 @@ void Mesh::SetupMesh()
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 	}
 
 	glBindVertexArray(0);
