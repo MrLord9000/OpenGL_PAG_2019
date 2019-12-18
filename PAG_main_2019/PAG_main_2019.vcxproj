@@ -165,6 +165,8 @@
     <None Include="Shaders\blinn-phong.vert" />
     <None Include="Shaders\gouraud.frag" />
     <None Include="Shaders\gouraud.vert" />
+    <None Include="Shaders\pbr.frag" />
+    <None Include="Shaders\pbr.vert" />
     <None Include="Shaders\phong.frag" />
     <None Include="Shaders\phong.vert" />
     <None Include="Shaders\phong_view_space.frag" />

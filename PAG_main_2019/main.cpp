@@ -355,6 +355,8 @@ int main()
 		glFrontFace(GL_CCW); // GL_CW - clockwise; GL_CCW - counter-clockwise
 		glEnable(GL_DEPTH_TEST);
 
+		glDisable(GL_FRAMEBUFFER_SRGB);
+
 		if (wireframeMode)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
@@ -434,11 +436,11 @@ int main()
 		glm::mat4 rootTransform = glm::mat4(1.0f);
 		rootNode.Render(rootTransform);
 
-
 		// ImGUI Render ++++++++++++
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+		glEnable(GL_FRAMEBUFFER_SRGB);
 		// Check and call events, swap buffers ++++++++++
 		glfwSwapBuffers(window);
 		glfwPollEvents();

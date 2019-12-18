@@ -43,6 +43,9 @@
     <Filter Include="Shaders\blinn-phong_shading">
       <UniqueIdentifier>{e16b27d3-e93a-4ec5-9d79-450ce96544d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\pbr_shading">
+      <UniqueIdentifier>{e552b9df-ec03-4926-a9a7-656eae3dd357}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -209,6 +212,12 @@
     </None>
     <None Include="Shaders\blinn-phong.vert">
       <Filter>Shaders\blinn-phong_shading</Filter>
+    </None>
+    <None Include="Shaders\pbr.frag">
+      <Filter>Shaders\pbr_shading</Filter>
+    </None>
+    <None Include="Shaders\pbr.vert">
+      <Filter>Shaders\pbr_shading</Filter>
     </None>
   </ItemGroup>
 </Project>
