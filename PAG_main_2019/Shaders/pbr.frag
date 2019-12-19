@@ -212,6 +212,7 @@ vec3 calcSpotLight(SpotLight light)
 	return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
+// Normal distribution function
 float DistributionGGX(vec3 normal, vec3 halfway, float roughness)
 {
 	float a = roughness * roughness;
@@ -226,6 +227,7 @@ float DistributionGGX(vec3 normal, vec3 halfway, float roughness)
 	return nom / denom;
 }
 
+// Geometry functions
 float GeometrySmith(vec3 normal, vec3 viewDir, vec3 lightDir, float roughness)
 {
 	float NdotV = max(dot(normal, viewDir), 0.0f);
@@ -247,6 +249,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 	return nom / denom;
 }
 
+// Fresnel equation
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
 	cosTheta = min(cosTheta, 1.0f);

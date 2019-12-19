@@ -12,6 +12,7 @@ public:
 	static glm::mat4 viewMatrix;
 	static float pitch, yaw;
 	static bool enabled;
+	static bool fps;
 
 	void SetAll(glm::vec3 &pos, glm::vec3 &front, glm::vec3 &up);
 	void SetPosition(glm::vec3 &pos);

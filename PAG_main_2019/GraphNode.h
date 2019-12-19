@@ -7,7 +7,8 @@
 class GraphNode
 {
 public:
-	GraphNode(Model* model = nullptr, glm::mat4 localTransform = glm::mat4(1.0f)) : model(model), localTransform(localTransform)
+	GraphNode(Model* model = nullptr, Material* material = nullptr, glm::mat4 localTransform = glm::mat4(1.0f)) 
+		: model(model), material(material), localTransform(localTransform)
 	{ 
 		worldTransform = glm::mat4(1.0f);
 		dirty_ = true;
@@ -24,6 +25,12 @@ public:
 		dirty_ = true;
 	}
 	
+	void SetLocalMatrix(glm::mat4 localMatrix)
+	{
+		localTransform = localMatrix;
+		dirty_ = true;
+	}
+
 	void Move(glm::vec3 vector) 
 	{ 
 		localTransform = glm::translate(localTransform, vector); 
@@ -57,8 +64,8 @@ public:
 		if (model != nullptr)
 		{
 			// Set the appropriate model matrix
-			model->GetMaterial()->SetModel(&worldTransform);
-			model->Draw();
+			material->SetModel(&worldTransform);
+			model->Draw(material);
 		}
 
 		// Recursively call render on all the child nodes
@@ -70,6 +77,7 @@ public:
 
 private:
 	Model* model;
+	Material* material;
 
 	glm::mat4 localTransform;
 	glm::mat4 worldTransform;

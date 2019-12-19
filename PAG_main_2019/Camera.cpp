@@ -4,6 +4,7 @@ glm::mat4 Camera::viewMatrix = glm::mat4(1.0f);
 float Camera::pitch = 0.0f;
 float Camera::yaw = 0.0f;
 bool Camera::enabled = true;
+bool Camera::fps = false;
 
 // ===== Setters ====================================================
 
@@ -47,6 +48,8 @@ float Camera::GetSpeed()
 
 void Camera::Update()
 {
+	if (fps)
+		position.y = 2.3f;
 	if (enabled)
 		viewMatrix = glm::lookAt(position, position + front, up);
 }

@@ -25,6 +25,8 @@
 int WINDOW_WIDTH = 1920;
 int WINDOW_HEIGHT = 1080;
 
+bool FPS = false;
+
 const char* glsl_version = "#version 330";
 
 // Global time variables - maybe not the best practice
@@ -74,6 +76,18 @@ int main()
 		glm::vec3(-8.0f, 4.0f, -8.0f)
 	};
 
+	glm::vec3 spotLightDirections[2] =
+	{
+		glm::vec3(-1.0f, -1.0f, -1.0f),
+		glm::vec3( 1.0f, -1.0f, 1.0f)
+	};
+
+	glm::vec3 spotLightColors[2] =
+	{
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
+	};
+
 // Setup materials
 
 	glm::mat4 model_zero = glm::mat4(1.0f);
@@ -97,7 +111,7 @@ int main()
 	houseMaterial.SetFloat(100.0f, "pointLights[0].radius");
 	// 2
 	houseMaterial.SetVec3(pointLightPositions[1], "pointLights[1].position");
-	houseMaterial.SetVec3(glm::vec3(0.5f, 0.5f, 0.0f), "pointLights[1].color");
+	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 0.0f), "pointLights[1].color");
 	houseMaterial.SetFloat(12.0f, "pointLights[1].intensity");
 	houseMaterial.SetFloat(50.0f, "pointLights[1].radius");
 	// 3
@@ -136,31 +150,43 @@ int main()
 	lightUnlit0.SetModel(&model_zero);
 	lightUnlit0.SetView(&view);
 	lightUnlit0.SetProjection(&projection);
-	lightUnlit0.SetVec4(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), "color");
+	lightUnlit0.SetVec3(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), "color");
 	// 2
 	Material lightUnlit1 = Material(&unlitColor);
 	lightUnlit1.SetModel(&model_zero);
 	lightUnlit1.SetView(&view);
 	lightUnlit1.SetProjection(&projection);
-	lightUnlit1.SetVec4(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f), "color");
+	lightUnlit1.SetVec3(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "color");
 	// 3
 	Material lightUnlit2 = Material(&unlitColor);
 	lightUnlit2.SetModel(&model_zero);
 	lightUnlit2.SetView(&view);
 	lightUnlit2.SetProjection(&projection);
-	lightUnlit2.SetVec4(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "color");
+	lightUnlit2.SetVec3(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "color");
 	// 4
 	Material lightUnlit3 = Material(&unlitColor);
 	lightUnlit3.SetModel(&model_zero);
 	lightUnlit3.SetView(&view);
 	lightUnlit3.SetProjection(&projection);
-	lightUnlit3.SetVec4(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), "color");
+	lightUnlit3.SetVec3(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), "color");
 
-	Model houseModel = Model("Models/house_chunk_01_pbr/house_chunk_01_pbr.obj", &houseMaterial);
-	Model lightGizmo0 = Model("Models/primitives/sphere.obj", &lightUnlit0);
-	Model lightGizmo1 = Model("Models/primitives/sphere.obj", &lightUnlit1);
-	Model lightGizmo2 = Model("Models/primitives/sphere.obj", &lightUnlit2);
-	Model lightGizmo3 = Model("Models/primitives/sphere.obj", &lightUnlit3);
+	// 1
+	Material spotUnlit0 = Material(&unlitColor);
+	spotUnlit0.SetModel(&model_zero);
+	spotUnlit0.SetView(&view);
+	spotUnlit0.SetProjection(&projection);
+	spotUnlit0.SetVec3(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), "color");
+
+	// 2
+	Material spotUnlit1 = Material(&unlitColor);
+	spotUnlit1.SetModel(&model_zero);
+	spotUnlit1.SetView(&view);
+	spotUnlit1.SetProjection(&projection);
+	spotUnlit1.SetVec3(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), "color");
+
+	Model houseModel = Model("Models/house_chunk_01_pbr/house_chunk_01_pbr.obj");
+	Model pointLightGizmo = Model("Models/primitives/sphere.obj");
+	Model spotLightGizmo = Model("Models/primitives/cone.obj");
 
 	// Planets & orbits =====================================================================================
 
@@ -172,39 +198,39 @@ int main()
 	matrix = glm::mat4(1.0f);
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
 	// 1
-	GraphNode house_01 = GraphNode(&houseModel, matrix);
+	GraphNode house_01 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_01);
 	// 2
 	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
-	GraphNode house_02 = GraphNode(&houseModel, matrix);
+	GraphNode house_02 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_02);
 	// 3
 	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 140.0f));
-	GraphNode house_03 = GraphNode(&houseModel, matrix);
+	GraphNode house_03 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_03);
 	// 4
 	matrix = glm::translate(matrix, glm::vec3(-140.0f, 0.0f, 0.0f));
-	GraphNode house_04 = GraphNode(&houseModel, matrix);
+	GraphNode house_04 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_04);
 	// 5
 	matrix = glm::translate(matrix, glm::vec3(-140.0f, 0.0f, 0.0f));
-	GraphNode house_05 = GraphNode(&houseModel, matrix);
+	GraphNode house_05 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_05);
 	// 6
 	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -140.0f));
-	GraphNode house_06 = GraphNode(&houseModel, matrix);
+	GraphNode house_06 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_06);
 	// 7
 	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -140.0f));
-	GraphNode house_07 = GraphNode(&houseModel, matrix);
+	GraphNode house_07 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_07);
 	// 8
 	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
-	GraphNode house_08 = GraphNode(&houseModel, matrix);
+	GraphNode house_08 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_08);
 	// 9
 	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
-	GraphNode house_09 = GraphNode(&houseModel, matrix);
+	GraphNode house_09 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_09);
 
 	// Point light visualization
@@ -212,27 +238,37 @@ int main()
 	matrix = glm::mat4(1.0f);
 	matrix = glm::translate(matrix, pointLightPositions[0]);
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode0 = GraphNode(&lightGizmo0, matrix);
+	GraphNode lightGizmoNode0 = GraphNode(&pointLightGizmo, &lightUnlit0, matrix);
 	rootNode.AddChild(&lightGizmoNode0);
 	// 1
 	matrix = glm::mat4(1.0f);
 	matrix = glm::translate(matrix, pointLightPositions[1]);
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode1 = GraphNode(&lightGizmo1, matrix);
+	GraphNode lightGizmoNode1 = GraphNode(&pointLightGizmo, &lightUnlit1, matrix);
 	rootNode.AddChild(&lightGizmoNode1);
 	// 2
 	matrix = glm::mat4(1.0f);
 	matrix = glm::translate(matrix, pointLightPositions[2]);
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode2 = GraphNode(&lightGizmo2, matrix);
+	GraphNode lightGizmoNode2 = GraphNode(&pointLightGizmo, &lightUnlit2, matrix);
 	rootNode.AddChild(&lightGizmoNode2);
 	// 3
 	matrix = glm::mat4(1.0f);
 	matrix = glm::translate(matrix, pointLightPositions[3]);
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode3 = GraphNode(&lightGizmo3, matrix);
+	GraphNode lightGizmoNode3 = GraphNode(&pointLightGizmo, &lightUnlit3, matrix);
 	rootNode.AddChild(&lightGizmoNode3);
 
+	// Spot light visualization
+	// 1
+	matrix = glm::mat4(1.0f);
+	GraphNode spotLightNode0 = GraphNode(&spotLightGizmo, &spotUnlit0, matrix);
+	rootNode.AddChild(&spotLightNode0);
+
+	// 2
+	matrix = glm::mat4(1.0f);
+	GraphNode spotLightNode1 = GraphNode(&spotLightGizmo, &spotUnlit1, matrix);
+	rootNode.AddChild(&spotLightNode1);
 
 	GLuint flashlightTexture = Model::TextureFromFile("flashlight.jpg", "Textures");
 	houseMaterial.SetTextureID(flashlightTexture, "spotLight.cookie");
@@ -263,12 +299,8 @@ int main()
 
 	float pointColor[3] = { 0.0f, 0.0f, 0.0f };
 	float flashlightColor[3] = { 1.0f, 1.0f, 1.0f };
-	float spot0Color[3] = { 1.0f, 0.0f, 0.0f };
-	float spot1Color[3] = { 0.0f, 0.0f, 1.0f };
 	float directionalColor[3] = { 1.0f, 1.0f, 1.0f };
 
-	float spot0Direction[3] = { -1.0f, -1.0f, -1.0f };
-	float spot1Direction[3] = { 1.0f, -1.0f, 1.0f };
 	float directionalDirection[3] = { -1.0f, 1.0f, -1.0f };
 
 // ===================================================================================================================================================
@@ -298,6 +330,14 @@ int main()
 
 		ImGui::Checkbox("Demo Window", &show_demo_window);
 
+		if (Camera::fps)
+		{
+			ImGui::Text("Fps camera");
+		}
+		else
+		{
+			ImGui::Text("Free camera");
+		}
 		ImGui::Text("Point light");
 		ImGui::Checkbox("Point Enabled", &pointEnabled);
 		ImGui::Checkbox("Rainbow", &rainbow);
@@ -311,15 +351,15 @@ int main()
 
 		ImGui::Text("Spot light A");
 		ImGui::Checkbox("Spot A Enabled", &spot0Enabled);
-		ImGui::SliderFloat3("Spot A Color", spot0Color, 0.0f, 1.0f);
+		ImGui::SliderFloat3("Spot A Color", glm::value_ptr(spotLightColors[0]), 0.0f, 1.0f);
 		ImGui::SliderFloat("Spot A Intensity", &spot0Intensity, 0.0f, 20.0f);
-		ImGui::SliderFloat3(" Spot A Direction", spot0Direction, -1.0f, 1.0f);
+		ImGui::SliderFloat3(" Spot A Direction", glm::value_ptr(spotLightDirections[0]), -1.0f, 1.0f);
 
 		ImGui::Text("Spot light B");
 		ImGui::Checkbox("Spot B Enabled", &spot1Enabled);
-		ImGui::SliderFloat3("Spot B Color", spot1Color, 0.0f, 1.0f);
+		ImGui::SliderFloat3("Spot B Color", glm::value_ptr(spotLightColors[1]), 0.0f, 1.0f);
 		ImGui::SliderFloat("Spot B Intensity", &spot1Intensity, 0.0f, 20.0f);
-		ImGui::SliderFloat3("Spot B Direction", spot1Direction, -1.0f, 1.0f);
+		ImGui::SliderFloat3("Spot B Direction", glm::value_ptr(spotLightDirections[1]), -1.0f, 1.0f);
 
 		ImGui::Text("Directional light");
 		ImGui::Checkbox("Directional Enabled", &directionalEnabled);
@@ -370,7 +410,7 @@ int main()
 		if (!pointEnabled)
 		{
 			houseMaterial.SetFloat(0.0f, "pointLights[3].intensity");
-			lightUnlit3.SetVec4(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "color");
+			lightUnlit3.SetVec3(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "color");
 		}
 		else
 		{
@@ -379,12 +419,12 @@ int main()
 			if (rainbow)
 			{
 				houseMaterial.SetVec3(glm::vec3(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f)))), "pointLights[3].color");
-				lightUnlit3.SetVec4(glm::vec4(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f))), 1.0f), "color");
+				lightUnlit3.SetVec3(glm::vec4(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f))), 1.0f), "color");
 			}
 			else
 			{
 				houseMaterial.SetVec3(glm::vec3(pointColor[0], pointColor[1], pointColor[2]), "pointLights[3].color");
-				lightUnlit3.SetVec4(glm::vec4(pointColor[0], pointColor[1], pointColor[2], 1.0f), "color");
+				lightUnlit3.SetVec3(glm::vec4(pointColor[0], pointColor[1], pointColor[2], 1.0f), "color");
 			}
 		}
 
@@ -406,8 +446,8 @@ int main()
 		else
 		{
 			houseMaterial.SetFloat(spot0Intensity, "spotLights[1].intensity");
-			houseMaterial.SetVec3(glm::vec3(spot0Direction[0], spot0Direction[1], spot0Direction[2]), "spotLights[1].direction");
-			houseMaterial.SetVec3(glm::vec3(spot0Color[0], spot0Color[1], spot0Color[2]), "spotLights[1].color");
+			houseMaterial.SetVec3(spotLightDirections[0], "spotLights[1].direction");
+			houseMaterial.SetVec3(spotLightColors[0], "spotLights[1].color");
 		}
 
 		if (!spot1Enabled)
@@ -417,8 +457,8 @@ int main()
 		else
 		{
 			houseMaterial.SetFloat(spot1Intensity, "spotLights[2].intensity");
-			houseMaterial.SetVec3(glm::vec3(spot1Direction[0], spot1Direction[1], spot1Direction[2]), "spotLights[2].direction");
-			houseMaterial.SetVec3(glm::vec3(spot1Color[0], spot1Color[1], spot1Color[2]), "spotLights[2].color");
+			houseMaterial.SetVec3(spotLightDirections[1], "spotLights[2].direction");
+			houseMaterial.SetVec3(spotLightColors[1], "spotLights[2].color");
 		}
 
 
@@ -439,6 +479,23 @@ int main()
 		
 		lightGizmoNode3.SetLocalPosition(glm::vec3(glm::cos(currentFrame) * 7.0f, 4.0f, glm::sin(currentFrame) * 7.0f));
 		houseMaterial.SetVec3(glm::vec3(glm::cos(currentFrame) * 7.0f, 4.0f, glm::sin(currentFrame) * 7.0f), "pointLights[3].position");
+
+		glm::vec3 up(0.0f, 1.0f, 0.0f);
+		glm::mat4 matrix = glm::mat4(1.0f);
+		matrix = glm::translate(matrix, spotLightPositions[0]);
+		matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+		glm::mat4 rotationMatrix = glm::transpose(glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), spotLightDirections[0], up));
+		rotationMatrix = matrix * rotationMatrix;
+		spotLightNode0.SetLocalMatrix(rotationMatrix);
+		spotUnlit0.SetVec3(spotLightColors[0], "color");
+
+		matrix = glm::mat4(1.0f);
+		matrix = glm::translate(matrix, spotLightPositions[1]);
+		matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+		rotationMatrix = glm::transpose(glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), spotLightDirections[1], up));
+		rotationMatrix = matrix * rotationMatrix;
+		spotLightNode1.SetLocalMatrix(rotationMatrix);
+		spotUnlit1.SetVec3(spotLightColors[1], "color");
 
 		glm::mat4 rootTransform = glm::mat4(1.0f);
 		rootNode.Render(rootTransform);
@@ -515,6 +572,11 @@ void processInput(GLFWwindow* window, Camera &camera)
 	{
 		targetVec += camera.GetUp() * cameraSpeed;
 	}
+	// F key
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		Camera::fps = !Camera::fps;
+	}
 	// Shift key
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
@@ -569,12 +631,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	if (fov >= 1.0f && fov <= 90.0f)
-		fov -= yoffset;
-	if (fov <= 1.0f)
-		fov = 1.0f;
-	if (fov >= 90.0f)
-		fov = 90.0f;
+	//if (fov >= 1.0f && fov <= 90.0f)
+	//	fov -= yoffset;
+	//if (fov <= 1.0f)
+	//	fov = 1.0f;
+	//if (fov >= 90.0f)
+	//	fov = 90.0f;
 }
 
 // Callback function that gets called each time the window is resized
