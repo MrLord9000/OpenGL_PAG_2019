@@ -12,9 +12,8 @@ public:
 	bool isPoint = false;
 
 	// Constructor
-	Model(const char* path, Material* mat, bool makePoint = false)
+	Model(const char* path, bool makePoint = false)
 	{
-		material = mat;
 		isPoint = makePoint;
 		if (path != nullptr)
 		{
@@ -27,7 +26,7 @@ public:
 	}
 
 	// Member functions
-	void Draw()
+	void Draw(Material* material)
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
 		{
@@ -35,8 +34,8 @@ public:
 		}
 	}
 
-	Material* GetMaterial() { return material; }
-	void SetMaterial(Material* mat) { material = mat; }
+	//Material* GetMaterial() { return material; }
+	//void SetMaterial(Material* mat) { material = mat; }
 	static GLuint TextureFromFile(const char* path, std::string directory);
 
 private:
@@ -44,8 +43,6 @@ private:
 	std::vector<Mesh> meshes;
 	std::string directory;
 	std::vector<Texture> textures_loaded;
-
-	Material* material;
 
 	// Member functions
 	void LoadModel(std::string path);

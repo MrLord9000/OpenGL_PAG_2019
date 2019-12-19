@@ -12,6 +12,8 @@ public:
 
 	void SetShader(Shader* shader) { this->shader = shader; }
 	Shader* GetShader() { return shader; }
+	// Warning! Use only if necessary or face the nullptrs
+	void DestroyShader() { delete shader; }
 
 	void SetModel(glm::mat4* matrix) { model = matrix; }
 	void SetView(glm::mat4* matrix) { view = matrix; }

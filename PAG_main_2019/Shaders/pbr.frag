@@ -27,7 +27,7 @@ struct PointLight
 	vec3 position;
 	vec3 color;
 };
-#define NR_POINT_LIGHTS 4
+#define NR_POINT_LIGHTS 1
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 struct SpotLight
@@ -97,7 +97,7 @@ void main()
 	vec3 Lo = vec3(0.0f);
 
 // Directional light ------------------------------------------------------------------------
-	Lo += calcDirectionalLight(directionalLight);
+//	Lo += calcDirectionalLight(directionalLight);
 	
 // Point light ---------------------------------------------------------------------------------
 	for (int i = 0; i < NR_POINT_LIGHTS; i++)
@@ -106,10 +106,10 @@ void main()
 	}
 	
 // Spot light -----------------------------------------------------------------------------------
-	for (int i = 0; i < NR_SPOT_LIGHTS; i++)
-	{
-		Lo += calcSpotLight(spotLights[i]);
-	}
+//	for (int i = 0; i < NR_SPOT_LIGHTS; i++)
+//	{
+//		Lo += calcSpotLight(spotLights[i]);
+//	}
 
 // Makeshift ambient lightning
 	vec3 ambient = vec3(0.01f) * albedo * ao;

@@ -132,6 +132,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="LightStatics.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Thirdparty\ImGUI\imgui.cpp" />
     <ClCompile Include="Thirdparty\ImGUI\imgui_demo.cpp" />
@@ -143,10 +144,12 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphNode.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Thirdparty\ImGUI\imconfig.h" />

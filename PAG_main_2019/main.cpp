@@ -20,6 +20,7 @@
 #include "Model.h"
 #include "Material.h"
 #include "GraphNode.h"
+#include "PointLight.h"
 
 // Program constants
 int WINDOW_WIDTH = 1920;
@@ -53,6 +54,7 @@ int main()
 	Shader pbr("Shaders/pbr.vert", "Shaders/pbr.frag");
 	Shader gouraud("Shaders/gouraud.vert", "Shaders/gouraud.frag");
 
+	Light::litShaders.push_back(&pbr);
 
 // Camera setup
 
@@ -74,6 +76,11 @@ int main()
 		glm::vec3(-8.0f, 4.0f, -8.0f)
 	};
 
+	PointLight pointLight0 = PointLight(
+		pointLightPositions[0],
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		8.0f, 100.0f);
+
 // Setup materials
 
 	glm::mat4 model_zero = glm::mat4(1.0f);
@@ -86,81 +93,78 @@ int main()
 	houseMaterial.SetProjection(&projection);
 	houseMaterial.SetViewPosition(mainCamera.GetPositionPointer());
 	// Directional light setup
-	houseMaterial.SetVec3(glm::vec3(-1.0f, 1.0f, -1.0f), "directionalLight.direction");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "directionalLight.color");
-	houseMaterial.SetFloat(6.0f, "directionalLight.intensity");
-	// Point lights setup
-	// 1
-	houseMaterial.SetVec3(pointLightPositions[0], "pointLights[0].position");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 0.0f, 0.0f), "pointLights[0].color");
-	houseMaterial.SetFloat(8.0f, "pointLights[0].intensity");
-	houseMaterial.SetFloat(100.0f, "pointLights[0].radius");
-	// 2
-	houseMaterial.SetVec3(pointLightPositions[1], "pointLights[1].position");
-	houseMaterial.SetVec3(glm::vec3(0.5f, 0.5f, 0.0f), "pointLights[1].color");
-	houseMaterial.SetFloat(12.0f, "pointLights[1].intensity");
-	houseMaterial.SetFloat(50.0f, "pointLights[1].radius");
-	// 3
-	houseMaterial.SetVec3(pointLightPositions[2], "pointLights[2].position");
-	houseMaterial.SetVec3(glm::vec3(0.0f, 0.0f, 1.0f), "pointLights[2].color");
-	houseMaterial.SetFloat(10.0f, "pointLights[2].intensity");
-	houseMaterial.SetFloat(25.0f, "pointLights[2].radius");
-	// 4
-	houseMaterial.SetVec3(pointLightPositions[3], "pointLights[3].position");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 0.3f, 0.2f), "pointLights[3].color");
-	houseMaterial.SetFloat(10.0f, "pointLights[3].intensity");
-	houseMaterial.SetFloat(25.0f, "pointLights[3].radius");
-	// Static flashlight spot light values
-	houseMaterial.SetFloat(glm::cos(glm::radians(17.5f)), "spotLights[0].cutoff"); // We set the cosine of value in radians to save performance
-	houseMaterial.SetFloat(glm::cos(glm::radians(22.5f)), "spotLights[0].outerCutoff");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[0].color");
-	houseMaterial.SetFloat(60.0f, "spotLights[0].range");
-	houseMaterial.SetFloat(1.0f, "spotLights[0].intensity");
-	// 1
-	houseMaterial.SetVec3(spotLightPositions[0], "spotLights[1].position");
-	houseMaterial.SetFloat(glm::cos(glm::radians(25.0f)), "spotLights[1].cutoff"); // We set the cosine of value in radians to save performance
-	houseMaterial.SetFloat(glm::cos(glm::radians(35.0f)), "spotLights[1].outerCutoff");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[1].color");
-	houseMaterial.SetFloat(50.0f, "spotLights[1].range");
-	houseMaterial.SetFloat(1.0f, "spotLights[1].intensity");
-	// 2
-	houseMaterial.SetVec3(spotLightPositions[1], "spotLights[2].position");
-	houseMaterial.SetFloat(glm::cos(glm::radians(25.0f)), "spotLights[2].cutoff"); // We set the cosine of value in radians to save performance
-	houseMaterial.SetFloat(glm::cos(glm::radians(35.0f)), "spotLights[2].outerCutoff");
-	houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[2].color");
-	houseMaterial.SetFloat(80.0f, "spotLights[2].range");
-	houseMaterial.SetFloat(1.0f, "spotLights[2].intensity");
+	//houseMaterial.SetVec3(glm::vec3(-1.0f, 1.0f, -1.0f), "directionalLight.direction");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "directionalLight.color");
+	//houseMaterial.SetFloat(6.0f, "directionalLight.intensity");
+	//// Point lights setup
+	//// 1
+	//houseMaterial.SetVec3(pointLightPositions[0], "pointLights[0].position");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 0.0f, 0.0f), "pointLights[0].color");
+	//houseMaterial.SetFloat(8.0f, "pointLights[0].intensity");
+	//houseMaterial.SetFloat(100.0f, "pointLights[0].radius");
+	//// 2
+	//houseMaterial.SetVec3(pointLightPositions[1], "pointLights[1].position");
+	//houseMaterial.SetVec3(glm::vec3(0.5f, 0.5f, 0.0f), "pointLights[1].color");
+	//houseMaterial.SetFloat(12.0f, "pointLights[1].intensity");
+	//houseMaterial.SetFloat(50.0f, "pointLights[1].radius");
+	//// 3
+	//houseMaterial.SetVec3(pointLightPositions[2], "pointLights[2].position");
+	//houseMaterial.SetVec3(glm::vec3(0.0f, 0.0f, 1.0f), "pointLights[2].color");
+	//houseMaterial.SetFloat(10.0f, "pointLights[2].intensity");
+	//houseMaterial.SetFloat(25.0f, "pointLights[2].radius");
+	//// 4
+	//houseMaterial.SetVec3(pointLightPositions[3], "pointLights[3].position");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 0.3f, 0.2f), "pointLights[3].color");
+	//houseMaterial.SetFloat(10.0f, "pointLights[3].intensity");
+	//houseMaterial.SetFloat(25.0f, "pointLights[3].radius");
+	//// Static flashlight spot light values
+	//houseMaterial.SetFloat(glm::cos(glm::radians(17.5f)), "spotLights[0].cutoff"); // We set the cosine of value in radians to save performance
+	//houseMaterial.SetFloat(glm::cos(glm::radians(22.5f)), "spotLights[0].outerCutoff");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[0].color");
+	//houseMaterial.SetFloat(60.0f, "spotLights[0].range");
+	//houseMaterial.SetFloat(1.0f, "spotLights[0].intensity");
+	//// 1
+	//houseMaterial.SetVec3(spotLightPositions[0], "spotLights[1].position");
+	//houseMaterial.SetFloat(glm::cos(glm::radians(25.0f)), "spotLights[1].cutoff"); // We set the cosine of value in radians to save performance
+	//houseMaterial.SetFloat(glm::cos(glm::radians(35.0f)), "spotLights[1].outerCutoff");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[1].color");
+	//houseMaterial.SetFloat(50.0f, "spotLights[1].range");
+	//houseMaterial.SetFloat(1.0f, "spotLights[1].intensity");
+	//// 2
+	//houseMaterial.SetVec3(spotLightPositions[1], "spotLights[2].position");
+	//houseMaterial.SetFloat(glm::cos(glm::radians(25.0f)), "spotLights[2].cutoff"); // We set the cosine of value in radians to save performance
+	//houseMaterial.SetFloat(glm::cos(glm::radians(35.0f)), "spotLights[2].outerCutoff");
+	//houseMaterial.SetVec3(glm::vec3(1.0f, 1.0f, 1.0f), "spotLights[2].color");
+	//houseMaterial.SetFloat(80.0f, "spotLights[2].range");
+	//houseMaterial.SetFloat(1.0f, "spotLights[2].intensity");
 
-	// 1
-	Material lightUnlit0 = Material(&unlitColor);
-	lightUnlit0.SetModel(&model_zero);
-	lightUnlit0.SetView(&view);
-	lightUnlit0.SetProjection(&projection);
-	lightUnlit0.SetVec4(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), "color");
-	// 2
-	Material lightUnlit1 = Material(&unlitColor);
-	lightUnlit1.SetModel(&model_zero);
-	lightUnlit1.SetView(&view);
-	lightUnlit1.SetProjection(&projection);
-	lightUnlit1.SetVec4(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f), "color");
-	// 3
-	Material lightUnlit2 = Material(&unlitColor);
-	lightUnlit2.SetModel(&model_zero);
-	lightUnlit2.SetView(&view);
-	lightUnlit2.SetProjection(&projection);
-	lightUnlit2.SetVec4(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "color");
-	// 4
-	Material lightUnlit3 = Material(&unlitColor);
-	lightUnlit3.SetModel(&model_zero);
-	lightUnlit3.SetView(&view);
-	lightUnlit3.SetProjection(&projection);
-	lightUnlit3.SetVec4(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), "color");
+	//// 1
+	//Material lightUnlit0 = Material(&unlitColor);
+	//lightUnlit0.SetModel(&model_zero);
+	//lightUnlit0.SetView(&view);
+	//lightUnlit0.SetProjection(&projection);
+	//lightUnlit0.SetVec4(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), "color");
+	//// 2
+	//Material lightUnlit1 = Material(&unlitColor);
+	//lightUnlit1.SetModel(&model_zero);
+	//lightUnlit1.SetView(&view);
+	//lightUnlit1.SetProjection(&projection);
+	//lightUnlit1.SetVec4(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f), "color");
+	//// 3
+	//Material lightUnlit2 = Material(&unlitColor);
+	//lightUnlit2.SetModel(&model_zero);
+	//lightUnlit2.SetView(&view);
+	//lightUnlit2.SetProjection(&projection);
+	//lightUnlit2.SetVec4(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "color");
+	//// 4
+	//Material lightUnlit3 = Material(&unlitColor);
+	//lightUnlit3.SetModel(&model_zero);
+	//lightUnlit3.SetView(&view);
+	//lightUnlit3.SetProjection(&projection);
+	//lightUnlit3.SetVec4(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), "color");
 
-	Model houseModel = Model("Models/house_chunk_01_pbr/house_chunk_01_pbr.obj", &houseMaterial);
-	Model lightGizmo0 = Model("Models/primitives/sphere.obj", &lightUnlit0);
-	Model lightGizmo1 = Model("Models/primitives/sphere.obj", &lightUnlit1);
-	Model lightGizmo2 = Model("Models/primitives/sphere.obj", &lightUnlit2);
-	Model lightGizmo3 = Model("Models/primitives/sphere.obj", &lightUnlit3);
+	Model houseModel = Model("Models/house_chunk_01_pbr/house_chunk_01_pbr.obj");
+	Model lightGizmo0 = Model("Models/primitives/sphere.obj");
 
 	// Planets & orbits =====================================================================================
 
@@ -172,66 +176,66 @@ int main()
 	matrix = glm::mat4(1.0f);
 	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
 	// 1
-	GraphNode house_01 = GraphNode(&houseModel, matrix);
+	GraphNode house_01 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_01);
 	// 2
 	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
-	GraphNode house_02 = GraphNode(&houseModel, matrix);
+	GraphNode house_02 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_02);
 	// 3
 	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 140.0f));
-	GraphNode house_03 = GraphNode(&houseModel, matrix);
+	GraphNode house_03 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_03);
 	// 4
 	matrix = glm::translate(matrix, glm::vec3(-140.0f, 0.0f, 0.0f));
-	GraphNode house_04 = GraphNode(&houseModel, matrix);
+	GraphNode house_04 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_04);
 	// 5
 	matrix = glm::translate(matrix, glm::vec3(-140.0f, 0.0f, 0.0f));
-	GraphNode house_05 = GraphNode(&houseModel, matrix);
+	GraphNode house_05 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_05);
 	// 6
 	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -140.0f));
-	GraphNode house_06 = GraphNode(&houseModel, matrix);
+	GraphNode house_06 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_06);
 	// 7
 	matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -140.0f));
-	GraphNode house_07 = GraphNode(&houseModel, matrix);
+	GraphNode house_07 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_07);
 	// 8
 	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
-	GraphNode house_08 = GraphNode(&houseModel, matrix);
+	GraphNode house_08 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_08);
 	// 9
 	matrix = glm::translate(matrix, glm::vec3(140.0f, 0.0f, 0.0f));
-	GraphNode house_09 = GraphNode(&houseModel, matrix);
+	GraphNode house_09 = GraphNode(&houseModel, &houseMaterial, matrix);
 	rootNode.AddChild(&house_09);
 
-	// Point light visualization
-	// 0
-	matrix = glm::mat4(1.0f);
-	matrix = glm::translate(matrix, pointLightPositions[0]);
-	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode0 = GraphNode(&lightGizmo0, matrix);
-	rootNode.AddChild(&lightGizmoNode0);
-	// 1
-	matrix = glm::mat4(1.0f);
-	matrix = glm::translate(matrix, pointLightPositions[1]);
-	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode1 = GraphNode(&lightGizmo1, matrix);
-	rootNode.AddChild(&lightGizmoNode1);
-	// 2
-	matrix = glm::mat4(1.0f);
-	matrix = glm::translate(matrix, pointLightPositions[2]);
-	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode2 = GraphNode(&lightGizmo2, matrix);
-	rootNode.AddChild(&lightGizmoNode2);
-	// 3
-	matrix = glm::mat4(1.0f);
-	matrix = glm::translate(matrix, pointLightPositions[3]);
-	matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-	GraphNode lightGizmoNode3 = GraphNode(&lightGizmo3, matrix);
-	rootNode.AddChild(&lightGizmoNode3);
+	//// Point light visualization
+	//// 0
+	//matrix = glm::mat4(1.0f);
+	//matrix = glm::translate(matrix, pointLightPositions[0]);
+	//matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	//GraphNode lightGizmoNode0 = GraphNode(&lightGizmo0, &lightUnlit0, matrix);
+	//rootNode.AddChild(&lightGizmoNode0);
+	//// 1
+	//matrix = glm::mat4(1.0f);
+	//matrix = glm::translate(matrix, pointLightPositions[1]);
+	//matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	//GraphNode lightGizmoNode1 = GraphNode(&lightGizmo0, &lightUnlit1, matrix);
+	//rootNode.AddChild(&lightGizmoNode1);
+	//// 2
+	//matrix = glm::mat4(1.0f);
+	//matrix = glm::translate(matrix, pointLightPositions[2]);
+	//matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	//GraphNode lightGizmoNode2 = GraphNode(&lightGizmo0, &lightUnlit2, matrix);
+	//rootNode.AddChild(&lightGizmoNode2);
+	//// 3
+	//matrix = glm::mat4(1.0f);
+	//matrix = glm::translate(matrix, pointLightPositions[3]);
+	//matrix = glm::scale(matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	//GraphNode lightGizmoNode3 = GraphNode(&lightGizmo0, &lightUnlit3, matrix);
+	//rootNode.AddChild(&lightGizmoNode3);
 
 
 	GLuint flashlightTexture = Model::TextureFromFile("flashlight.jpg", "Textures");
@@ -367,78 +371,80 @@ int main()
 		// Perform per-frame transformations on objects
 
 
-		if (!pointEnabled)
-		{
-			houseMaterial.SetFloat(0.0f, "pointLights[3].intensity");
-			lightUnlit3.SetVec4(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "color");
-		}
-		else
-		{
-			houseMaterial.SetFloat(10.0f, "pointLights[3].intensity");
-			// Rainbow light
-			if (rainbow)
-			{
-				houseMaterial.SetVec3(glm::vec3(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f)))), "pointLights[3].color");
-				lightUnlit3.SetVec4(glm::vec4(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f))), 1.0f), "color");
-			}
-			else
-			{
-				houseMaterial.SetVec3(glm::vec3(pointColor[0], pointColor[1], pointColor[2]), "pointLights[3].color");
-				lightUnlit3.SetVec4(glm::vec4(pointColor[0], pointColor[1], pointColor[2], 1.0f), "color");
-			}
-		}
+		//if (!pointEnabled)
+		//{
+		//	houseMaterial.SetFloat(0.0f, "pointLights[3].intensity");
+		//	lightUnlit3.SetVec4(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "color");
+		//}
+		//else
+		//{
+		//	houseMaterial.SetFloat(10.0f, "pointLights[3].intensity");
+		//	// Rainbow light
+		//	if (rainbow)
+		//	{
+		//		houseMaterial.SetVec3(glm::vec3(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f)))), "pointLights[3].color");
+		//		lightUnlit3.SetVec4(glm::vec4(glm::abs(glm::sin(currentFrame)), glm::abs(glm::sin(currentFrame + glm::radians(45.0f))), glm::abs(glm::sin(currentFrame + glm::radians(90.0f))), 1.0f), "color");
+		//	}
+		//	else
+		//	{
+		//		houseMaterial.SetVec3(glm::vec3(pointColor[0], pointColor[1], pointColor[2]), "pointLights[3].color");
+		//		lightUnlit3.SetVec4(glm::vec4(pointColor[0], pointColor[1], pointColor[2], 1.0f), "color");
+		//	}
+		//}
 
-		if (!flashlightEnabled)
-		{
-			houseMaterial.SetFloat(0.0f, "spotLights[0].intensity");
-		}
-		else
-		{
-			houseMaterial.SetFloat(flashlightIntensity, "spotLights[0].intensity");
-			houseMaterial.SetFloat(flashlightRange, "spotLights[0].range");
-			houseMaterial.SetVec3(glm::vec3(flashlightColor[0], flashlightColor[1], flashlightColor[2]), "spotLights[0].color");
-		}
+		//if (!flashlightEnabled)
+		//{
+		//	houseMaterial.SetFloat(0.0f, "spotLights[0].intensity");
+		//}
+		//else
+		//{
+		//	houseMaterial.SetFloat(flashlightIntensity, "spotLights[0].intensity");
+		//	houseMaterial.SetFloat(flashlightRange, "spotLights[0].range");
+		//	houseMaterial.SetVec3(glm::vec3(flashlightColor[0], flashlightColor[1], flashlightColor[2]), "spotLights[0].color");
+		//}
 
-		if (!spot0Enabled)
-		{
-			houseMaterial.SetFloat(0.0f, "spotLights[1].intensity");
-		}
-		else
-		{
-			houseMaterial.SetFloat(spot0Intensity, "spotLights[1].intensity");
-			houseMaterial.SetVec3(glm::vec3(spot0Direction[0], spot0Direction[1], spot0Direction[2]), "spotLights[1].direction");
-			houseMaterial.SetVec3(glm::vec3(spot0Color[0], spot0Color[1], spot0Color[2]), "spotLights[1].color");
-		}
+		//if (!spot0Enabled)
+		//{
+		//	houseMaterial.SetFloat(0.0f, "spotLights[1].intensity");
+		//}
+		//else
+		//{
+		//	houseMaterial.SetFloat(spot0Intensity, "spotLights[1].intensity");
+		//	houseMaterial.SetVec3(glm::vec3(spot0Direction[0], spot0Direction[1], spot0Direction[2]), "spotLights[1].direction");
+		//	houseMaterial.SetVec3(glm::vec3(spot0Color[0], spot0Color[1], spot0Color[2]), "spotLights[1].color");
+		//}
 
-		if (!spot1Enabled)
-		{
-			houseMaterial.SetFloat(0.0f, "spotLights[2].intensity");
-		}
-		else
-		{
-			houseMaterial.SetFloat(spot1Intensity, "spotLights[2].intensity");
-			houseMaterial.SetVec3(glm::vec3(spot1Direction[0], spot1Direction[1], spot1Direction[2]), "spotLights[2].direction");
-			houseMaterial.SetVec3(glm::vec3(spot1Color[0], spot1Color[1], spot1Color[2]), "spotLights[2].color");
-		}
+		//if (!spot1Enabled)
+		//{
+		//	houseMaterial.SetFloat(0.0f, "spotLights[2].intensity");
+		//}
+		//else
+		//{
+		//	houseMaterial.SetFloat(spot1Intensity, "spotLights[2].intensity");
+		//	houseMaterial.SetVec3(glm::vec3(spot1Direction[0], spot1Direction[1], spot1Direction[2]), "spotLights[2].direction");
+		//	houseMaterial.SetVec3(glm::vec3(spot1Color[0], spot1Color[1], spot1Color[2]), "spotLights[2].color");
+		//}
 
 
-		if (!directionalEnabled)
-		{
-			houseMaterial.SetFloat(0.0f, "directionalLight.intensity");
-		}
-		else
-		{
-			houseMaterial.SetVec3(glm::vec3(directionalColor[0], directionalColor[1], directionalColor[2]), "directionalLight.color");
-			houseMaterial.SetVec3(glm::vec3(directionalDirection[0], directionalDirection[1], directionalDirection[2]), "directionalLight.direction");
-			houseMaterial.SetFloat(directionalIntensity, "directionalLight.intensity");
-		}
+		//if (!directionalEnabled)
+		//{
+		//	houseMaterial.SetFloat(0.0f, "directionalLight.intensity");
+		//}
+		//else
+		//{
+		//	houseMaterial.SetVec3(glm::vec3(directionalColor[0], directionalColor[1], directionalColor[2]), "directionalLight.color");
+		//	houseMaterial.SetVec3(glm::vec3(directionalDirection[0], directionalDirection[1], directionalDirection[2]), "directionalLight.direction");
+		//	houseMaterial.SetFloat(directionalIntensity, "directionalLight.intensity");
+		//}
 		// Flashlight transform
 		houseMaterial.SetVec3(mainCamera.GetPosition(), "spotLights[0].position");
 		houseMaterial.SetVec3(mainCamera.GetFront(), "spotLights[0].direction");
 
 		
-		lightGizmoNode3.SetLocalPosition(glm::vec3(glm::cos(currentFrame) * 7.0f, 4.0f, glm::sin(currentFrame) * 7.0f));
+		//lightGizmoNode3.SetLocalPosition(glm::vec3(glm::cos(currentFrame) * 7.0f, 4.0f, glm::sin(currentFrame) * 7.0f));
 		houseMaterial.SetVec3(glm::vec3(glm::cos(currentFrame) * 7.0f, 4.0f, glm::sin(currentFrame) * 7.0f), "pointLights[3].position");
+
+		Light::LightPass();
 
 		glm::mat4 rootTransform = glm::mat4(1.0f);
 		rootNode.Render(rootTransform);
